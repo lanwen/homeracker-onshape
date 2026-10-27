@@ -1,6 +1,6 @@
 HomeRacker Onshape FeatureScript port
 
-The parametric dimensions and component designs in features/homeracker.fs are
+The parametric dimensions and component designs in src/ and dist/homeracker.fs are
 derived from HomeRacker by Patrick Pötz (kellervater), source revision
 5a64b663ef2d91678d70b85e85df1bcc30c090d5:
 https://github.com/kellerlabs/homeracker

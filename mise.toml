@@ -6,6 +6,10 @@ run = "python3.12 scripts/setup.py"
 description = "Render upstream SCAD comparison cases into artifacts/reference"
 run = ".venv/bin/python scripts/reference.py"
 
+[tasks.build]
+description = "Bundle local source into one FeatureScript file and line map (offline)"
+run = "python3.12 scripts/build.py"
+
 [tasks.compare]
 description = "Compare exported STEP parts against their reference STL counterparts"
 run = ".venv/bin/python scripts/compare.py --batch"
@@ -15,5 +19,10 @@ description = "Build a temporary FeatureScript validation feature with named cas
 run = ".venv/bin/python scripts/validation.py"
 
 [tasks.test]
-description = "Test comparison tooling, including shape mismatch detection"
+description = "Check the generated bundle and test local tooling"
+depends = ["build:check"]
 run = ".venv/bin/python -m pytest -q"
+
+[tasks."build:check"]
+description = "Check that the committed bundle matches local source (offline)"
+run = "python3.12 scripts/build.py --check"

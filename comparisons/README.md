@@ -44,13 +44,15 @@ Invalid references produce a failing exit status with diagnostic metadata.
 
 ## STEP exports
 
-`mise run validation` writes `artifacts/homeracker-validation.fs` without making
-API calls. It appends a separate **Homeracker comparisons** feature to the current
-source, using the Onshape definitions in the manifest. This feature creates
+`mise run validation` first rebuilds `dist/homeracker.fs` from the fragments in
+`src/`, then writes `artifacts/homeracker-validation.fs` without making API calls.
+It appends a separate **Homeracker comparisons** feature to the bundle, using
+the Onshape definitions in the manifest. This feature creates
 all named cases in one regeneration, asserts one solid per case, and prints
 volumes and bounds in millimetres. Use `--case <name>` to build a smaller batch.
 The generated JSON records both source hashes. The public feature stays in
-`features/homeracker.fs`; the fixture is for a development document only.
+`dist/homeracker.fs`; the fixture is for a development document only. Edit
+the source fragments, not either generated FeatureScript file.
 
 Export each Onshape part in its original coordinate frame to
 `artifacts/onshape/<case-name>.step`. Onshape cases must use the same parameters

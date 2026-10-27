@@ -9,6 +9,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from build import write_bundle
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -61,8 +63,7 @@ def main():
     cases = [c for c in manifest["cases"] if not args.case or c["name"] in args.case]
     if not cases or args.case and set(args.case) != {c["name"] for c in cases}:
         parser.error("Unknown case name")
-    source_path = ROOT / "features/homeracker.fs"
-    source = source_path.read_text()
+    source = write_bundle(ROOT)
     out = ROOT / "artifacts/homeracker-validation.fs"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(build_validation(source, cases))

@@ -241,6 +241,82 @@ function squareFrustum(context is Context, id is Id,
             "entities" : qUnion([body(id + "lower"), body(id + "upper")]) });
 }
 
+function passage(context is Context, id is Id, center is Vector,
+        axis is PullAxis, target is Query)
+{
+    var straight = id + "straight";
+    var dims = axis == PullAxis.X ? vector(ARM, PIN, PIN) :
+            (axis == PullAxis.Y ? vector(PIN, ARM, PIN) : vector(PIN, PIN, ARM));
+    makeBox(context, straight, center, dims);
+    cut(context, id + "straightCut", target, body(straight));
+    for (var side in [0, 1])
+    {
+        var z0 = side == 0 ? -ARM / 2 + LEAD_LIP : ARM / 2 - PIN_BEVEL;
+        var z1 = side == 0 ? -ARM / 2 + PIN_BEVEL : ARM / 2 - LEAD_LIP;
+        var s0 = side == 0 ? PIN + 2 * PIN_BEVEL : PIN;
+        var s1 = side == 0 ? PIN : PIN + 2 * PIN_BEVEL;
+        var taper = id + ("lead" ~ side);
+        squareFrustum(context, taper, z0, s0, z1, s1);
+        var rot = rotationAround(line(vector(0, 0, 0) * millimeter, vector(0, 1, 0)), 0 * degree);
+        if (axis == PullAxis.X)
+            rot = rotationAround(line(vector(0, 0, 0) * millimeter, vector(0, 1, 0)), 90 * degree);
+        if (axis == PullAxis.Y)
+            rot = rotationAround(line(vector(0, 0, 0) * millimeter, vector(1, 0, 0)), -90 * degree);
+        opTransform(context, taper + "place", {
+                "bodies" : body(taper + "loft"),
+                "transform" : transform(center) * rot });
+        // BOSL2's partial-edge cuboid chamfer reaches full width 0.01 mm
+        // before the outside face, leaving a short square entry lip.
+        var lipOffset = (side == 0 ? -1 : 1) * (ARM / 2 - LEAD_LIP / 2);
+        var overlapShift = (side == 0 ? 1 : -1) * LEAD_JOIN_OVERLAP / 2;
+        lipOffset = lipOffset + overlapShift;
+        var lipCenter = center +
+                (axis == PullAxis.X ? vector(lipOffset, 0 * millimeter, 0 * millimeter) :
+                 (axis == PullAxis.Y ? vector(0 * millimeter, lipOffset, 0 * millimeter) :
+                                       vector(0 * millimeter, 0 * millimeter, lipOffset)));
+        var lipDims = axis == PullAxis.X ?
+                vector(LEAD_LIP + LEAD_JOIN_OVERLAP, PIN + 2 * PIN_BEVEL, PIN + 2 * PIN_BEVEL) :
+                (axis == PullAxis.Y ?
+                 vector(PIN + 2 * PIN_BEVEL, LEAD_LIP + LEAD_JOIN_OVERLAP, PIN + 2 * PIN_BEVEL) :
+                 vector(PIN + 2 * PIN_BEVEL, PIN + 2 * PIN_BEVEL, LEAD_LIP + LEAD_JOIN_OVERLAP));
+        makeBox(context, taper + "lip", lipCenter, lipDims);
+        add(context, taper + "joinLip", body(taper + "loft"), body(taper + "lip"));
+        cut(context, taper + "cut", target, body(taper + "loft"));
+    }
+}
+
+function panelPassage(context is Context, id is Id, center is Vector,
+        axis is PullAxis, entrySign is number, target is Query)
+{
+    var straight = id + "straight";
+    var dims = axis == PullAxis.X ? vector(WALL + 1 * millimeter, PIN, PIN) :
+            vector(PIN, WALL + 1 * millimeter, PIN);
+    makeBox(context, straight, center, dims);
+    cut(context, id + "straightCut", target, body(straight));
+    var z0 = entrySign < 0 ? -WALL / 2 + LEAD_LIP : WALL / 2 - PIN_BEVEL;
+    var z1 = entrySign < 0 ? -WALL / 2 + PIN_BEVEL : WALL / 2 - LEAD_LIP;
+    var s0 = entrySign < 0 ? PIN + 2 * PIN_BEVEL : PIN;
+    var s1 = entrySign < 0 ? PIN : PIN + 2 * PIN_BEVEL;
+    var taper = id + "lead";
+    squareFrustum(context, taper, z0, s0, z1, s1);
+    var rot = axis == PullAxis.X ?
+            rotationAround(line(vector(0, 0, 0) * millimeter, vector(0, 1, 0)), 90 * degree) :
+            rotationAround(line(vector(0, 0, 0) * millimeter, vector(1, 0, 0)), -90 * degree);
+    opTransform(context, taper + "place", {
+            "bodies" : body(taper + "loft"),
+            "transform" : transform(center) * rot });
+    var lipOffset = entrySign * (WALL / 2 - LEAD_LIP / 2 - LEAD_JOIN_OVERLAP / 2);
+    var lipCenter = center + (axis == PullAxis.X ?
+            vector(lipOffset, 0 * millimeter, 0 * millimeter) :
+            vector(0 * millimeter, lipOffset, 0 * millimeter));
+    var lipDims = axis == PullAxis.X ?
+            vector(LEAD_LIP + LEAD_JOIN_OVERLAP, PIN + 2 * PIN_BEVEL, PIN + 2 * PIN_BEVEL) :
+            vector(PIN + 2 * PIN_BEVEL, LEAD_LIP + LEAD_JOIN_OVERLAP, PIN + 2 * PIN_BEVEL);
+    makeBox(context, id + "lip", lipCenter, lipDims);
+    add(context, id + "joinLeadLip", body(taper + "loft"), body(id + "lip"));
+    cut(context, id + "leadCut", target, body(taper + "loft"));
+}
+
 // Canonical hole along Z. At the centre the square is 4.8 mm, narrowing to
 // 4.0 mm at +/-6.7 mm, then flaring to 5.6 mm at +/-7.5 mm.
 function supportHole(context is Context, id is Id, center is Vector, axis is PullAxis)
@@ -318,82 +394,6 @@ function armBottom(index is number) returns Plane
     if (index == 3) return plane(vector(-U / 2, 0 * millimeter, 0 * millimeter), vector(1, 0, 0));
     if (index == 4) return plane(vector(0 * millimeter, U / 2, 0 * millimeter), vector(0, 1, 0));
     return plane(vector(0 * millimeter, -U / 2, 0 * millimeter), vector(0, 1, 0));
-}
-
-function passage(context is Context, id is Id, center is Vector,
-        axis is PullAxis, target is Query)
-{
-    var straight = id + "straight";
-    var dims = axis == PullAxis.X ? vector(ARM, PIN, PIN) :
-            (axis == PullAxis.Y ? vector(PIN, ARM, PIN) : vector(PIN, PIN, ARM));
-    makeBox(context, straight, center, dims);
-    cut(context, id + "straightCut", target, body(straight));
-    for (var side in [0, 1])
-    {
-        var z0 = side == 0 ? -ARM / 2 + LEAD_LIP : ARM / 2 - PIN_BEVEL;
-        var z1 = side == 0 ? -ARM / 2 + PIN_BEVEL : ARM / 2 - LEAD_LIP;
-        var s0 = side == 0 ? PIN + 2 * PIN_BEVEL : PIN;
-        var s1 = side == 0 ? PIN : PIN + 2 * PIN_BEVEL;
-        var taper = id + ("lead" ~ side);
-        squareFrustum(context, taper, z0, s0, z1, s1);
-        var rot = rotationAround(line(vector(0, 0, 0) * millimeter, vector(0, 1, 0)), 0 * degree);
-        if (axis == PullAxis.X)
-            rot = rotationAround(line(vector(0, 0, 0) * millimeter, vector(0, 1, 0)), 90 * degree);
-        if (axis == PullAxis.Y)
-            rot = rotationAround(line(vector(0, 0, 0) * millimeter, vector(1, 0, 0)), -90 * degree);
-        opTransform(context, taper + "place", {
-                "bodies" : body(taper + "loft"),
-                "transform" : transform(center) * rot });
-        // BOSL2's partial-edge cuboid chamfer reaches full width 0.01 mm
-        // before the outside face, leaving a short square entry lip.
-        var lipOffset = (side == 0 ? -1 : 1) * (ARM / 2 - LEAD_LIP / 2);
-        var overlapShift = (side == 0 ? 1 : -1) * LEAD_JOIN_OVERLAP / 2;
-        lipOffset = lipOffset + overlapShift;
-        var lipCenter = center +
-                (axis == PullAxis.X ? vector(lipOffset, 0 * millimeter, 0 * millimeter) :
-                 (axis == PullAxis.Y ? vector(0 * millimeter, lipOffset, 0 * millimeter) :
-                                       vector(0 * millimeter, 0 * millimeter, lipOffset)));
-        var lipDims = axis == PullAxis.X ?
-                vector(LEAD_LIP + LEAD_JOIN_OVERLAP, PIN + 2 * PIN_BEVEL, PIN + 2 * PIN_BEVEL) :
-                (axis == PullAxis.Y ?
-                 vector(PIN + 2 * PIN_BEVEL, LEAD_LIP + LEAD_JOIN_OVERLAP, PIN + 2 * PIN_BEVEL) :
-                 vector(PIN + 2 * PIN_BEVEL, PIN + 2 * PIN_BEVEL, LEAD_LIP + LEAD_JOIN_OVERLAP));
-        makeBox(context, taper + "lip", lipCenter, lipDims);
-        add(context, taper + "joinLip", body(taper + "loft"), body(taper + "lip"));
-        cut(context, taper + "cut", target, body(taper + "loft"));
-    }
-}
-
-function panelPassage(context is Context, id is Id, center is Vector,
-        axis is PullAxis, entrySign is number, target is Query)
-{
-    var straight = id + "straight";
-    var dims = axis == PullAxis.X ? vector(WALL + 1 * millimeter, PIN, PIN) :
-            vector(PIN, WALL + 1 * millimeter, PIN);
-    makeBox(context, straight, center, dims);
-    cut(context, id + "straightCut", target, body(straight));
-    var z0 = entrySign < 0 ? -WALL / 2 + LEAD_LIP : WALL / 2 - PIN_BEVEL;
-    var z1 = entrySign < 0 ? -WALL / 2 + PIN_BEVEL : WALL / 2 - LEAD_LIP;
-    var s0 = entrySign < 0 ? PIN + 2 * PIN_BEVEL : PIN;
-    var s1 = entrySign < 0 ? PIN : PIN + 2 * PIN_BEVEL;
-    var taper = id + "lead";
-    squareFrustum(context, taper, z0, s0, z1, s1);
-    var rot = axis == PullAxis.X ?
-            rotationAround(line(vector(0, 0, 0) * millimeter, vector(0, 1, 0)), 90 * degree) :
-            rotationAround(line(vector(0, 0, 0) * millimeter, vector(1, 0, 0)), -90 * degree);
-    opTransform(context, taper + "place", {
-            "bodies" : body(taper + "loft"),
-            "transform" : transform(center) * rot });
-    var lipOffset = entrySign * (WALL / 2 - LEAD_LIP / 2 - LEAD_JOIN_OVERLAP / 2);
-    var lipCenter = center + (axis == PullAxis.X ?
-            vector(lipOffset, 0 * millimeter, 0 * millimeter) :
-            vector(0 * millimeter, lipOffset, 0 * millimeter));
-    var lipDims = axis == PullAxis.X ?
-            vector(LEAD_LIP + LEAD_JOIN_OVERLAP, PIN + 2 * PIN_BEVEL, PIN + 2 * PIN_BEVEL) :
-            vector(PIN + 2 * PIN_BEVEL, LEAD_LIP + LEAD_JOIN_OVERLAP, PIN + 2 * PIN_BEVEL);
-    makeBox(context, id + "lip", lipCenter, lipDims);
-    add(context, id + "joinLeadLip", body(taper + "loft"), body(id + "lip"));
-    cut(context, id + "leadCut", target, body(taper + "loft"));
 }
 
 function printTetrahedron(context is Context, id is Id)
