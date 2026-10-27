@@ -21,6 +21,26 @@ topologies, pull-throughs, both enclosure-panel fits, minimum panels, and partia
 mounts. References and their input/version/hash metadata appear under
 `artifacts/reference/`.
 
+## Geometry details
+
+The support's square pin passage follows the upstream cross sections.
+It measures 5.6 mm at each entrance, 4 mm at ±6.7 mm, and 4.8 mm at its center.
+A chamfer is a beveled edge.
+The support has 1 mm chamfers on its outer edges.
+
+Connector arm dimensions and direction selection follow the OpenSCAD construction.
+The connector also follows its hollow arm design and trim for the printing base.
+Its square pin holes have 0.8 mm lead-ins.
+A tetrahedron has four triangular faces.
+Five- and six-way connectors include this shape for printing.
+
+The panel follows the upstream grid dimensions and uses a 2 mm surface.
+It has 13 × 2 mm L-shaped corner plates and square lock pin passages.
+It also has optional intermediate edge mounts with bridges and gap fillers.
+Full cover panels include a plate that overlaps the frame.
+The connector's inner cavity chamfer lies on the arm-side plane.
+The outer arm chamfer excludes that plane.
+
 ## Rendering backends
 
 Most cases use Manifold. Five- and six-way connectors explicitly use CGAL.
