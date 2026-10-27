@@ -1,0 +1,16 @@
+HomeRacker Onshape FeatureScript port
+
+The parametric dimensions and component designs in features/homeracker.fs are
+derived from HomeRacker by Patrick Pötz (kellervater), source revision
+5a64b663ef2d91678d70b85e85df1bcc30c090d5:
+https://github.com/kellerlabs/homeracker
+
+The source files used were models/core/lib/constants.scad, support.scad,
+connector.scad, lockpin.scad, and models/panel/lib/panel.scad. Their code is
+published under the MIT license; its copyright and permission text is in
+LICENSE. HomeRacker model artifacts are separately identified as CC BY-SA 4.0
+in the upstream models/LICENSE. The upstream trademark and branding are not
+licensed by the MIT grant.
+
+This port was written as native FeatureScript. It is not generated OpenSCAD
+output and does not include BOSL2 code.

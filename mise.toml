@@ -1,0 +1,19 @@
+[tasks.setup]
+description = "Create Python environment and download pinned reference CAD tools (macOS)"
+run = "python3.12 scripts/setup.py"
+
+[tasks.reference]
+description = "Render upstream SCAD comparison cases into artifacts/reference"
+run = ".venv/bin/python scripts/reference.py"
+
+[tasks.compare]
+description = "Compare exported STEP parts against their reference STL counterparts"
+run = ".venv/bin/python scripts/compare.py --batch"
+
+[tasks.validation]
+description = "Build a temporary FeatureScript validation feature with named cases (offline)"
+run = ".venv/bin/python scripts/validation.py"
+
+[tasks.test]
+description = "Test comparison tooling, including shape mismatch detection"
+run = ".venv/bin/python -m pytest -q"

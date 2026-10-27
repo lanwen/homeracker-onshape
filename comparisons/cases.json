@@ -1,0 +1,206 @@
+{
+  "upstream_commit": "5a64b663ef2d91678d70b85e85df1bcc30c090d5",
+  "units": "millimeter",
+  "cases": [
+    {
+      "name": "support_3u",
+      "module": "models/core/lib/support.scad",
+      "call": "support(units=3);",
+      "onshape": {
+        "kind": "SUPPORT",
+        "supportUnits": 3,
+        "xHoles": false
+      }
+    },
+    {
+      "name": "support_3u_cross",
+      "module": "models/core/lib/support.scad",
+      "call": "support(units=3, x_holes=true);",
+      "onshape": {
+        "kind": "SUPPORT",
+        "supportUnits": 3,
+        "xHoles": true
+      }
+    },
+    {
+      "name": "support_1u",
+      "module": "models/core/lib/support.scad",
+      "call": "support(units=1);",
+      "onshape": {
+        "kind": "SUPPORT",
+        "supportUnits": 1,
+        "xHoles": false
+      }
+    },
+    {
+      "name": "connector_elbow",
+      "module": "models/core/lib/connector.scad",
+      "call": "connector(dimensions=2, directions=2, optimal_orientation=false);",
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorDimensions": 2,
+        "connectorWays": 2,
+        "pullAxis": "NONE"
+      }
+    },
+    {
+      "name": "connector_corner",
+      "module": "models/core/lib/connector.scad",
+      "call": "connector(dimensions=3, directions=3, optimal_orientation=false);",
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorDimensions": 3,
+        "connectorWays": 3,
+        "pullAxis": "NONE"
+      }
+    },
+    {
+      "name": "connector_cross_pullthrough",
+      "module": "models/core/lib/connector.scad",
+      "call": "connector(dimensions=2, directions=4, pull_through_axis=\"z\", optimal_orientation=false);",
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorDimensions": 2,
+        "connectorWays": 4,
+        "pullAxis": "Z"
+      }
+    },
+    {
+      "name": "connector_1d",
+      "module": "models/core/lib/connector.scad",
+      "call": "connector(dimensions=1, directions=2, optimal_orientation=false);",
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorDimensions": 1,
+        "connectorWays": 2,
+        "pullAxis": "NONE"
+      }
+    },
+    {
+      "name": "connector_5way",
+      "module": "models/core/lib/connector.scad",
+      "backend": "CGAL",
+      "call": "connector(dimensions=3, directions=5, optimal_orientation=false);",
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorDimensions": 3,
+        "connectorWays": 5,
+        "pullAxis": "NONE"
+      }
+    },
+    {
+      "name": "connector_6way",
+      "module": "models/core/lib/connector.scad",
+      "backend": "CGAL",
+      "call": "connector(dimensions=3, directions=6, optimal_orientation=false);",
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorDimensions": 3,
+        "connectorWays": 6,
+        "pullAxis": "NONE"
+      }
+    },
+    {
+      "name": "panel_interfit_4x3",
+      "module": "models/panel/lib/panel.scad",
+      "call": "panel(units_x=4, units_y=3, panel_type=1);",
+      "onshape": {
+        "kind": "PANEL",
+        "panelX": 4,
+        "panelY": 3,
+        "panelFit": "INTERFIT",
+        "panelClearance": 0,
+        "cornerMounts": true,
+        "northMounts": true,
+        "southMounts": true,
+        "eastMounts": true,
+        "westMounts": true
+      }
+    },
+    {
+      "name": "panel_fullcover_4x3",
+      "module": "models/panel/lib/panel.scad",
+      "call": "panel(units_x=4, units_y=3, panel_type=2, panel_clearance=0.2);",
+      "onshape": {
+        "kind": "PANEL",
+        "panelX": 4,
+        "panelY": 3,
+        "panelFit": "FULL_COVER",
+        "panelClearance": 0.2,
+        "cornerMounts": true,
+        "northMounts": true,
+        "southMounts": true,
+        "eastMounts": true,
+        "westMounts": true
+      }
+    },
+    {
+      "name": "panel_interfit_2x2",
+      "module": "models/panel/lib/panel.scad",
+      "call": "panel(units_x=2, units_y=2, panel_type=1);",
+      "onshape": {
+        "kind": "PANEL",
+        "panelX": 2,
+        "panelY": 2,
+        "panelFit": "INTERFIT",
+        "panelClearance": 0,
+        "cornerMounts": true,
+        "northMounts": true,
+        "southMounts": true,
+        "eastMounts": true,
+        "westMounts": true
+      }
+    },
+    {
+      "name": "panel_interfit_partial",
+      "module": "models/panel/lib/panel.scad",
+      "call": "panel(units_x=4, units_y=4, panel_type=1, corner_mounts=false, mount_south=false, mount_west=false);",
+      "onshape": {
+        "kind": "PANEL",
+        "panelX": 4,
+        "panelY": 4,
+        "panelFit": "INTERFIT",
+        "panelClearance": 0,
+        "cornerMounts": false,
+        "northMounts": true,
+        "southMounts": false,
+        "eastMounts": true,
+        "westMounts": false
+      }
+    },
+    {
+      "name": "panel_fullcover_partial",
+      "module": "models/panel/lib/panel.scad",
+      "call": "panel(units_x=4, units_y=4, panel_type=2, corner_mounts=false, mount_south=false, mount_west=false);",
+      "onshape": {
+        "kind": "PANEL",
+        "panelX": 4,
+        "panelY": 4,
+        "panelFit": "FULL_COVER",
+        "panelClearance": 0,
+        "cornerMounts": false,
+        "northMounts": true,
+        "southMounts": false,
+        "eastMounts": true,
+        "westMounts": false
+      }
+    },
+    {
+      "name": "panel_fullcover_corner_relief",
+      "module": "models/panel/lib/panel.scad",
+      "call": "panel(units_x=4, units_y=4, panel_type=2, corner_mounts=true, mount_south=false, mount_west=false);",
+      "onshape": {
+        "kind": "PANEL",
+        "panelX": 4,
+        "panelY": 4,
+        "panelFit": "FULL_COVER",
+        "panelClearance": 0,
+        "cornerMounts": true,
+        "northMounts": true,
+        "southMounts": false,
+        "eastMounts": true,
+        "westMounts": false
+      }
+    }
+  ]
+}
