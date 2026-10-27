@@ -162,17 +162,16 @@ Pushes to `main` trigger releases when source, build, asset, mise, or workflow f
 Documentation-only changes do not trigger a release.
 The workflow also supports `workflow_dispatch` for a manual release.
 
-GitHub cannot use the Onshape MCP login from a chat session.
-Onshape synchronization currently runs through MCP or the manual steps below.
-For each release, upload the released `homeracker.fs` to the shared Feature Studio.
-Read the saved code back to confirm that it matches the release asset.
-Then create an Onshape document version with the same tag, such as `v0.1.0`.
-Include the GitHub release URL and source commit in the version description.
-This keeps the bundle header, GitHub tag, and Onshape version name in sync.
+### Sync a release to Onshape
 
-For a manual update, paste the released script into the Feature Studio.
-Then click Commit and create the matching document version.
-Existing linked features can select the new document version in Onshape.
+GitHub releases do not update Onshape. You can ask for an MCP sync or do it yourself:
+
+1. Download `homeracker.fs` from the release and open the shared Homeracker Feature Studio.
+2. Replace its code with the downloaded file, then click Commit.
+3. Create a document version with the release tag as its name, such as `v0.1.0`.
+   Add the GitHub release link to its description.
+
+For an existing linked feature, select the new document version in Onshape.
 
 To share the feature with other documents, create a version of its Onshape document.
 Give users at least `View, copy & export` access to that document.

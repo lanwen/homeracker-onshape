@@ -1,7 +1,6 @@
 # HomeRacker for Onshape
 
-Create individual HomeRacker parts with one custom feature in Onshape.
-Choose the part type and its inputs:
+Make HomeRacker parts in Onshape with one custom feature:
 
 - Support: Set the length and optional X pin holes.
 - Connector: Choose the arms and an optional pull-through axis.
@@ -9,30 +8,22 @@ Choose the part type and its inputs:
 
 ## Install and use
 
-You need an editable Part Studio.
-The source document needs a version and `View, copy & export` access.
-Use this document URL in step 3:
+In your editable Part Studio, open Add custom features from the toolbar.
+Paste this document URL into the search box:
 
 ```text
 https://cad.onshape.com/documents/98b88f085d92f997adf9129c/w/d000ce49db154cdce9e482df/e/6d2975b4f296af4b2ed01e1f
 ```
 
-1. Open your Part Studio in Onshape.
-2. Click Add custom features on the feature toolbar.
-3. Paste the document URL into the dialog search box.
-4. Select Homeracker from the document.
-5. Close the dialog.
-6. Open Homeracker from the toolbar.
-7. Set the part type and its inputs.
-8. Click the green checkmark to create the part.
+Select Homeracker to add it.
+Then use Homeracker from the toolbar.
 
 Hover over a parameter to read what it does.
 
-See the [Onshape instructions](https://cad.onshape.com/help/Content/PartStudio/add_custom_features.htm) for details about access and document versions.
-You do not need local tools or a separate Feature Studio to use this feature.
+For document access and version requirements, see the [Onshape instructions](https://cad.onshape.com/help/Content/PartStudio/add_custom_features.htm).
 
 ## More information
 
-- Read [Development](docs/development.md) to edit the source and build the script.
-- Read [Compatibility](docs/compatibility.md) for dimensions, limits, and comparison results.
-- Download the complete script from the [latest release](https://github.com/lanwen/homeracker-onshape/releases/latest).
+- [Development](docs/development.md): Edit the source and build the script.
+- [Compatibility](docs/compatibility.md): Dimensions, limits, and comparison results.
+- [Latest release](https://github.com/lanwen/homeracker-onshape/releases/latest): Download the complete script.
