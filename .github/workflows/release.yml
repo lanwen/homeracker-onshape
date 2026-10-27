@@ -1,0 +1,117 @@
+name: Validate and release HomeRacker
+
+on:
+  pull_request:
+    paths:
+      - src/**
+      - assets/**
+      - scripts/build.py
+      - scripts/release.py
+      - scripts/validation.py
+      - tests/**
+      - mise.toml
+      - requirements-ci.txt
+      - requirements.lock
+      - .github/workflows/release.yml
+  push:
+    branches: [main]
+    paths:
+      - src/**
+      - assets/**
+      - scripts/build.py
+      - scripts/release.py
+      - mise.toml
+      - .github/workflows/release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install mise and Python
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
+        with:
+          cache: true
+      - name: Install CI test dependency
+        run: python3.12 -m pip install -r requirements-ci.txt
+      - name: Build FeatureScript bundle
+        run: python3.12 scripts/build.py
+      - name: Test bundle, validation, release, and assets
+        run: >-
+          python3.12 -m pytest -q
+          tests/test_build.py
+          tests/test_validation.py
+          tests/test_release.py
+          tests/test_workflow.py
+          tests/test_assets.py
+
+  release:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: homeracker-bundle-release
+      queue: max
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Check out exact release commit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Install mise and Python
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
+        with:
+          cache: true
+      - name: Build and checksum release assets
+        shell: bash
+        run: |
+          python3.12 scripts/build.py
+          python3.12 scripts/release.py --prepare > "$RUNNER_TEMP/release-assets.txt"
+          (cd dist && sha256sum --check SHA256SUMS)
+      - name: Publish release at triggering commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="$(python3.12 scripts/release.py --tag "$GITHUB_SHA")"
+          mapfile -t assets < "$RUNNER_TEMP/release-assets.txt"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            tagged_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.sha')"
+            if [[ "$tagged_sha" != "$GITHUB_SHA" ]]; then
+              echo "Existing tag $tag points to $tagged_sha, expected $GITHUB_SHA" >&2
+              exit 1
+            fi
+            gh release upload "$tag" "${assets[@]}" --clobber
+          else
+            gh release create "$tag" "${assets[@]}" \
+              --target "$GITHUB_SHA" \
+              --title "HomeRacker bundle ${GITHUB_SHA:0:12}" \
+              --notes "Native FeatureScript bundle built from commit $GITHUB_SHA." \
+              --latest=false
+            tagged_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.sha')"
+            if [[ "$tagged_sha" != "$GITHUB_SHA" ]]; then
+              echo "New tag $tag points to $tagged_sha, expected $GITHUB_SHA" >&2
+              exit 1
+            fi
+          fi
+          latest_tag="$(gh release view --json tagName --jq '.tagName' 2>/dev/null || true)"
+          promote=true
+          if [[ "$latest_tag" =~ ^bundle-([0-9a-f]{40})$ ]]; then
+            latest_sha="${BASH_REMATCH[1]}"
+            relation="$(gh api "repos/$GITHUB_REPOSITORY/compare/$latest_sha...$GITHUB_SHA" --jq '.status')"
+            if [[ "$relation" != "ahead" && "$relation" != "identical" ]]; then
+              promote=false
+            fi
+          fi
+          if [[ "$promote" == true ]]; then
+            gh release edit "$tag" --latest
+          fi

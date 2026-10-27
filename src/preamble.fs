@@ -1,5 +1,6 @@
 FeatureScript 3095;
 import(path : "onshape/std/geometry.fs", version : "3095.0");
+HomerackerIcon::import(path : "98b88f085d92f997adf9129c/5c1332f8213dbab347fcf700/5d40a8b491f2b10e435725b2", version : "ce09f2f735295098c9e08a85");
 
 // Derived from HomeRacker's OpenSCAD models at
 // 5a64b663ef2d91678d70b85e85df1bcc30c090d5 (Patrick Pötz, MIT).

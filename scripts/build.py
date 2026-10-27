@@ -73,7 +73,7 @@ def write_bundle(root=ROOT, check=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true", help="Fail if committed outputs differ; do not write files")
+    parser.add_argument("--check", action="store_true", help="Fail if generated outputs are missing or stale; do not write files")
     args = parser.parse_args()
     try:
         write_bundle(check=args.check)

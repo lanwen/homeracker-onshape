@@ -10,6 +10,7 @@ packaging==26.3
 pillow==13.0.0
 pluggy==1.7.0
 Pygments==2.21.0
+PyYAML==6.0.2
 pyparsing==3.3.3
 pytest==8.4.2
 python-dateutil==3.0.0

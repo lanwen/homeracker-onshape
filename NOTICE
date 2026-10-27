@@ -14,3 +14,8 @@ licensed by the MIT grant.
 
 This port was written as native FeatureScript. It is not generated OpenSCAD
 output and does not include BOSL2 code.
+
+assets/homeracker-logo.svg is the HomeRacker single-color logo, from
+https://github.com/kellerlabs/assets at revision
+0070ea2482ac296e6660234b778959b39484f1c5. Hidden bitmap data and editor metadata
+were removed. See assets/README.md for its source and usage guide.

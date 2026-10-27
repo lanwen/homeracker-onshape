@@ -1,3 +1,6 @@
+[tools]
+python = "3.12"
+
 [tasks.setup]
 description = "Create Python environment and download pinned reference CAD tools (macOS)"
 run = "python3.12 scripts/setup.py"
@@ -19,10 +22,10 @@ description = "Build a temporary FeatureScript validation feature with named cas
 run = ".venv/bin/python scripts/validation.py"
 
 [tasks.test]
-description = "Check the generated bundle and test local tooling"
-depends = ["build:check"]
+description = "Build the generated bundle and test local tooling"
+depends = ["build"]
 run = ".venv/bin/python -m pytest -q"
 
 [tasks."build:check"]
-description = "Check that the committed bundle matches local source (offline)"
+description = "Check that the generated bundle matches local source (offline)"
 run = "python3.12 scripts/build.py --check"
