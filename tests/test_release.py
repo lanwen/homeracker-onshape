@@ -6,7 +6,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from build import MODULES, write_bundle
-from release import prepare_release, release_tag
+from release import prepare_release, release_tag, select_version, release_pages
 
 
 @pytest.fixture
@@ -21,12 +21,31 @@ def project(tmp_path):
     return tmp_path
 
 
-def test_release_tag_requires_exact_full_commit():
-    sha = "a" * 40
-    assert release_tag(sha) == "bundle-" + sha
-    for invalid in ("a" * 12, "A" * 40, "g" * 40, "a" * 41, ""):
-        with pytest.raises(ValueError, match="full lowercase"):
-            release_tag(invalid)
+def test_release_tag_uses_semver():
+    assert release_tag("0.1.0") == "v0.1.0"
+    with pytest.raises(ValueError, match="MAJOR.MINOR.PATCH"):
+        release_tag("a" * 40)
+
+
+def test_automatic_patch_manual_minor_and_rerun_versions():
+    first_sha, next_sha = "a" * 40, "b" * 40
+    releases = [{"tag_name": "bundle-" + first_sha, "target_commitish": first_sha}]
+    assert select_version("0.1.0", next_sha, releases) == "0.1.0"
+    releases.append({"tag_name": "v0.1.0", "target_commitish": first_sha})
+    assert select_version("0.1.0", next_sha, releases) == "0.1.1"
+    assert select_version("0.2.0", next_sha, releases) == "0.2.0"
+    assert select_version("1.0.0", next_sha, releases) == "1.0.0"
+    assert select_version("0.1.0", first_sha, releases) == "0.1.0"
+    releases.append({"tag_name": "v0.1.9", "target_commitish": "c" * 40})
+    assert select_version("0.1.0", next_sha, releases) == "0.1.10"
+    assert select_version("0.1.0", first_sha, releases) == "0.1.0"
+    with pytest.raises(ValueError, match="full lowercase"):
+        select_version("0.1.0", "abc", releases)
+
+
+def test_release_selection_reads_all_paginated_results():
+    assert release_pages('[{"tag_name":"v0.1.0"}]\n[{"tag_name":"v0.2.0"}]\n') == [
+        {"tag_name": "v0.1.0"}, {"tag_name": "v0.2.0"}]
 
 
 def test_prepare_release_checksums_built_assets_and_logo(project):

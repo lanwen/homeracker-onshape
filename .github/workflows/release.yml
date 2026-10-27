@@ -7,6 +7,8 @@ on:
       - assets/**
       - scripts/build.py
       - scripts/release.py
+      - scripts/versioning.py
+      - VERSION
       - scripts/validation.py
       - tests/**
       - mise.toml
@@ -20,6 +22,8 @@ on:
       - assets/**
       - scripts/build.py
       - scripts/release.py
+      - scripts/versioning.py
+      - VERSION
       - mise.toml
       - .github/workflows/release.yml
   workflow_dispatch:
@@ -47,6 +51,7 @@ jobs:
           tests/test_build.py
           tests/test_validation.py
           tests/test_release.py
+          tests/test_versioning.py
           tests/test_workflow.py
           tests/test_assets.py
 
@@ -72,17 +77,28 @@ jobs:
         uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
         with:
           cache: true
-      - name: Build and checksum release assets
+      - name: Select semantic version
+        id: version
         shell: bash
         run: |
-          python3.12 scripts/build.py
-          python3.12 scripts/release.py --prepare > "$RUNNER_TEMP/release-assets.txt"
+          tag="$(python3.12 scripts/release.py --resolve "$GITHUB_SHA")"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+      - name: Build and checksum release assets
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        shell: bash
+        run: |
+          python3.12 scripts/build.py --version "$RELEASE_VERSION"
+          python3.12 scripts/release.py --prepare --version "$RELEASE_VERSION" > "$RUNNER_TEMP/release-assets.txt"
           (cd dist && sha256sum --check SHA256SUMS)
       - name: Publish release at triggering commit
+        env:
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
         shell: bash
         run: |
           set -euo pipefail
-          tag="$(python3.12 scripts/release.py --tag "$GITHUB_SHA")"
+          tag="$RELEASE_TAG"
           mapfile -t assets < "$RUNNER_TEMP/release-assets.txt"
           if gh release view "$tag" >/dev/null 2>&1; then
             tagged_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.sha')"
@@ -94,7 +110,7 @@ jobs:
           else
             gh release create "$tag" "${assets[@]}" \
               --target "$GITHUB_SHA" \
-              --title "HomeRacker bundle ${GITHUB_SHA:0:12}" \
+              --title "HomeRacker $tag" \
               --notes "Native FeatureScript bundle built from commit $GITHUB_SHA." \
               --latest=false
             tagged_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.sha')"
@@ -105,8 +121,8 @@ jobs:
           fi
           latest_tag="$(gh release view --json tagName --jq '.tagName' 2>/dev/null || true)"
           promote=true
-          if [[ "$latest_tag" =~ ^bundle-([0-9a-f]{40})$ ]]; then
-            latest_sha="${BASH_REMATCH[1]}"
+          if [[ "$latest_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            latest_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$latest_tag" --jq '.object.sha')"
             relation="$(gh api "repos/$GITHUB_REPOSITORY/compare/$latest_sha...$GITHUB_SHA" --jq '.status')"
             if [[ "$relation" != "ahead" && "$relation" != "identical" ]]; then
               promote=false

@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+from versioning import parse_version, read_version
 
 ROOT = Path(__file__).resolve().parents[1]
 # Explicit dependency order; do not rely on filesystem or alphabetical order.
@@ -18,12 +19,18 @@ MODULES = (
 )
 
 
-def bundle_sources(source_dir):
+def bundle_sources(source_dir, version=None):
     chunks = []
     locations = []
     next_line = 1
+    if version is not None:
+        parse_version(version)
     for name in MODULES:
         text = (source_dir / name).read_text(encoding="utf-8").strip()
+        source_hash = hashlib.sha256((text + "\n").encode()).hexdigest()
+        if "{{PROJECT_VERSION}}" in text:
+            version = version or read_version(source_dir.parent)
+            text = text.replace("{{PROJECT_VERSION}}", version)
         if not text:
             raise ValueError(f"Empty source fragment: {name}")
         if name == "preamble.fs":
@@ -40,7 +47,7 @@ def bundle_sources(source_dir):
             "source": f"src/{name}",
             "start_line": next_line,
             "end_line": next_line + line_count - 1,
-            "sha256": hashlib.sha256((text + "\n").encode()).hexdigest(),
+            "sha256": source_hash,
         })
         next_line += line_count + 1
     code = "\n\n".join(chunks) + "\n"
@@ -49,11 +56,13 @@ def bundle_sources(source_dir):
         "sha256": hashlib.sha256(code.encode()).hexdigest(),
         "modules": locations,
     }
+    if version is not None:
+        mapping["version"] = version
     return code, mapping
 
 
-def write_bundle(root=ROOT, check=False):
-    code, mapping = bundle_sources(root / "src")
+def write_bundle(root=ROOT, check=False, version=None):
+    code, mapping = bundle_sources(root / "src", version=version)
     outputs = {
         root / "dist/homeracker.fs": code,
         root / "dist/homeracker.sources.json": json.dumps(mapping, indent=2) + "\n",
@@ -74,9 +83,10 @@ def write_bundle(root=ROOT, check=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="Fail if generated outputs are missing or stale; do not write files")
+    parser.add_argument("--version", help="Release version; defaults to VERSION")
     args = parser.parse_args()
     try:
-        write_bundle(check=args.check)
+        write_bundle(check=args.check, version=args.version)
     except ValueError as error:
         parser.exit(1, f"{error}\n")
     print("Bundle is current" if args.check else ROOT / "dist/homeracker.fs")

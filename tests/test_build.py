@@ -67,6 +67,22 @@ def test_mismatched_versions_fail(project):
         bundle_sources(project / "src")
 
 
+def test_project_version_is_rendered_without_changing_source_or_line_mapping(project):
+    preamble = project / "src/preamble.fs"
+    preamble.write_text(preamble.read_text() + "// HomeRacker v{{PROJECT_VERSION}}\n")
+    (project / "VERSION").write_text("0.1.0\n")
+    original = preamble.read_text()
+    code, mapping = bundle_sources(project / "src")
+    assert "// HomeRacker v0.1.0" in code
+    assert mapping["version"] == "0.1.0"
+    released, released_mapping = bundle_sources(project / "src", version="0.2.3")
+    assert "// HomeRacker v0.2.3" in released
+    assert released_mapping["version"] == "0.2.3"
+    assert mapping["modules"] == released_mapping["modules"]
+    assert mapping["sha256"] != released_mapping["sha256"]
+    assert preamble.read_text() == original
+
+
 def test_validation_rebuilds_bundle_from_current_sources(project, monkeypatch):
     import validation
 

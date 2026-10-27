@@ -140,15 +140,39 @@ The other release files describe that script:
 - `SHA256SUMS`: SHA-256 hashes of the release files
 - `logo.svg`: Logo for the Onshape feature icon
 
-A commit SHA identifies a source revision.
-Each release tag uses `bundle-` followed by the full commit SHA.
+Releases use semantic version tags, such as `v0.1.0`.
+The header and source line map contain the same version.
+`VERSION` sets the starting version for the next release.
+The first semantic release is `v0.1.0`.
+Later source changes on `main` increase the patch number automatically.
+To select a new minor or major version, set `VERSION` above the latest release.
+For example, use `0.2.0` for new features or `1.0.0` for the first stable interface.
+A rerun for the same commit keeps its original version.
+Old `bundle-<commit SHA>` releases remain available.
+
+Local builds use `VERSION` by default.
+To reproduce a published release, use its version explicitly:
+
+```sh
+python3.12 scripts/build.py --version 0.1.0
+```
+
+The release notes identify the exact source commit.
 Pushes to `main` trigger releases when source, build, asset, mise, or workflow files change.
 Documentation-only changes do not trigger a release.
 The workflow also supports `workflow_dispatch` for a manual release.
 
-A GitHub release does not update an Onshape document.
-To update an Onshape feature, paste the new complete script into its Feature Studio.
-Then click Commit.
+GitHub cannot use the Onshape MCP login from a chat session.
+Onshape synchronization currently runs through MCP or the manual steps below.
+For each release, upload the released `homeracker.fs` to the shared Feature Studio.
+Read the saved code back to confirm that it matches the release asset.
+Then create an Onshape document version with the same tag, such as `v0.1.0`.
+Include the GitHub release URL and source commit in the version description.
+This keeps the bundle header, GitHub tag, and Onshape version name in sync.
+
+For a manual update, paste the released script into the Feature Studio.
+Then click Commit and create the matching document version.
+Existing linked features can select the new document version in Onshape.
 
 To share the feature with other documents, create a version of its Onshape document.
 Give users at least `View, copy & export` access to that document.
