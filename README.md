@@ -45,8 +45,7 @@ feature. The feature does not make lock pins or panel cutout variants.
 The [comparison workflow](comparisons/README.md) includes a pinned toolchain,
 15 upstream SCAD fixtures, an offline batch-feature builder, and STEP/STL
 comparison tools. Run `mise run setup`, `mise run reference`, and `mise run test`
-to prepare the references locally. See the [static Astra review](comparisons/astra-review.json)
-for the reviewed source hash and remaining verification scope.
+to prepare the references locally.
 
 The feature compiles in Onshape and all 15 comparison cases regenerate through
 the Onshape MCP server, producing one solid each with no notices. Bounding boxes
