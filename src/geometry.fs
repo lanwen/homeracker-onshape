@@ -237,13 +237,19 @@ function passage(context is Context, id is Id, center is Vector,
 }
 
 function panelPassage(context is Context, id is Id, center is Vector,
-        axis is PullAxis, entrySign is number, target is Query)
+        axis is PullAxis, entrySign is number, target is Query, chamfers is boolean, mates is boolean)
 {
     var straight = id + "straight";
     var dims = axis == PullAxis.X ? vector(WALL + 1 * millimeter, PIN, PIN) :
             vector(PIN, WALL + 1 * millimeter, PIN);
     makeBox(context, straight, center, dims);
     cut(context, id + "straightCut", target, body(straight));
+    if (mates)
+        assemblyMate(context, id + "mate", "Panel " ~ (axis == PullAxis.X ? "X" : "Y") ~ " pin (" ~
+                        (round(center[0] / (0.1 * millimeter)) / 10) ~ ", " ~ (round(center[1] / (0.1 * millimeter)) / 10) ~ ")", target, center,
+                axis == PullAxis.X ? vector(entrySign, 0, 0) : vector(0, entrySign, 0));
+    if (!chamfers)
+        return;
     var z0 = entrySign < 0 ? -WALL / 2 + LEAD_LIP : WALL / 2 - PIN_BEVEL;
     var z1 = entrySign < 0 ? -WALL / 2 + PIN_BEVEL : WALL / 2 - LEAD_LIP;
     var s0 = entrySign < 0 ? PIN + 2 * PIN_BEVEL : PIN;
@@ -266,4 +272,17 @@ function panelPassage(context is Context, id is Id, center is Vector,
     makeBox(context, id + "lip", lipCenter, lipDims);
     add(context, id + "joinLeadLip", body(taper + "loft"), body(id + "lip"));
     cut(context, id + "leadCut", target, body(taper + "loft"));
+}
+
+// Owned connectors travel with their part when inserted into an assembly.
+// attachTo also makes them follow later Part Studio transformations.
+function assemblyMate(context is Context, id is Id, label is string, owner is Query,
+        origin is Vector, normal is Vector)
+{
+    var x = abs(normal[0]) > 0.5 ? vector(0, 1, 0) : vector(1, 0, 0);
+    opMateConnector(context, id, {
+            "coordSystem" : coordSystem(origin, x, normal),
+            "owner" : owner, "attachTo" : owner });
+    setProperty(context, { "entities" : qCreatedBy(id, EntityType.BODY),
+            "propertyType" : PropertyType.NAME, "value" : label });
 }

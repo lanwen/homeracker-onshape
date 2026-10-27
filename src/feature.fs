@@ -1,6 +1,6 @@
 annotation { "Feature Type Name" : "Homeracker", "Feature Type Description" :
         "Create a HomeRacker support, connector, or side panel. Choose the part type, then set its size and mounts.",
-        "Icon" : HomerackerIcon::BLOB_DATA }
+        "Icon" : HomerackerIcon::BLOB_DATA, "Feature Name Template" : "#generatedName" }
 export const homeracker = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -45,6 +45,9 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
                     "Set the gap between adjacent full cover panels. Enter a length, such as 0.5 mm." }
                 isLength(definition.panelClearance, { (millimeter) : [0, 0, 5] } as LengthBoundSpec);
             }
+            annotation { "Name" : "Chamfers", "Default" : true, "Description" :
+                    "Bevel the panel edges and pin hole entrances. Turn off to leave them square." }
+            definition.panelChamfers is boolean;
             annotation { "Name" : "Corner mounts", "Description" :
                     "Add corner mounts with pin holes. Disable these on large panels if adjacent panels need the same pin holes." }
             definition.cornerMounts is boolean;
@@ -61,23 +64,39 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
                     "Add the mounting strip on the -X edge of the panel face." }
             definition.westMounts is boolean;
         }
+        annotation { "Name" : "Mate connectors", "Default" : true, "Description" :
+                    "Add assembly connection points to this part. These move with the part in an assembly." }
+        definition.mateConnectors is boolean;
     }
     {
+        var label = "HomeRacker";
         if (definition.kind == HomerackerKind.SUPPORT)
-            support(context, id, definition.supportUnits, definition.xHoles);
+        {
+            label = label ~ " Support " ~ definition.supportUnits ~ "U" ~ (definition.xHoles ? " cross holes" : "");
+            support(context, id, definition.supportUnits, definition.xHoles, definition.mateConnectors);
+        }
         if (definition.kind == HomerackerKind.CONNECTOR)
         {
             var minWays = definition.connectorDimensions;
             var maxWays = 2 * definition.connectorDimensions;
             var ways = max(minWays, min(maxWays, definition.connectorWays));
-            connector(context, id, definition.connectorDimensions, ways, definition.pullAxis);
+            label = label ~ " Connector " ~ definition.connectorDimensions ~ "D " ~ ways ~ "-way" ~
+                    (definition.pullAxis == PullAxis.NONE ? "" : " pull " ~ definition.pullAxis);
+            connector(context, id, definition.connectorDimensions, ways, definition.pullAxis, definition.mateConnectors);
         }
         if (definition.kind == HomerackerKind.PANEL)
+        {
+            label = label ~ " Panel " ~ definition.panelX ~ "x" ~ definition.panelY ~
+                    (definition.panelFit == PanelFit.INTERFIT ? " InterFit" : " Full cover");
             panel(context, id, definition.panelX, definition.panelY,
                     definition.panelFit,
                     definition.panelFit == PanelFit.FULL_COVER ? definition.panelClearance : 0 * millimeter,
                     definition.cornerMounts, definition.northMounts, definition.southMounts,
-                    definition.eastMounts, definition.westMounts);
+                    definition.eastMounts, definition.westMounts, definition.panelChamfers, definition.mateConnectors);
+        }
+        setProperty(context, { "entities" : qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID),
+                "propertyType" : PropertyType.NAME, "value" : label });
+        setFeatureComputedParameter(context, id, { "name" : "generatedName", "value" : label });
     }, {
         "kind" : HomerackerKind.SUPPORT,
         "supportUnits" : 3,
@@ -88,6 +107,8 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
         "panelX" : 4,
         "panelY" : 3,
         "panelFit" : PanelFit.INTERFIT,
+        "panelChamfers" : true,
+        "mateConnectors" : true,
         "panelClearance" : 0 * millimeter,
         "cornerMounts" : true,
         "northMounts" : true,

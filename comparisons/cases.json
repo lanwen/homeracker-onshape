@@ -201,6 +201,116 @@
         "eastMounts": true,
         "westMounts": false
       }
+    },
+    {
+      "name": "panel_interfit_4x3_square",
+      "module": "models/panel/lib/panel.scad",
+      "call": "panel(units_x=4, units_y=3, panel_type=1, chamfer_enabled=false);",
+      "onshape": {
+        "kind": "PANEL",
+        "panelX": 4,
+        "panelY": 3,
+        "panelFit": "INTERFIT",
+        "panelClearance": 0,
+        "cornerMounts": true,
+        "northMounts": true,
+        "southMounts": true,
+        "eastMounts": true,
+        "westMounts": true,
+        "panelChamfers": false
+      }
+    },
+    {
+      "name": "panel_fullcover_4x3_square",
+      "module": "models/panel/lib/panel.scad",
+      "call": "panel(units_x=4, units_y=3, panel_type=2, panel_clearance=0.2, chamfer_enabled=false);",
+      "onshape": {
+        "kind": "PANEL",
+        "panelX": 4,
+        "panelY": 3,
+        "panelFit": "FULL_COVER",
+        "panelClearance": 0.2,
+        "cornerMounts": true,
+        "northMounts": true,
+        "southMounts": true,
+        "eastMounts": true,
+        "westMounts": true,
+        "panelChamfers": false
+      }
+    },
+    {
+      "name": "panel_interfit_2x2_square",
+      "module": "models/panel/lib/panel.scad",
+      "call": "panel(units_x=2, units_y=2, panel_type=1, chamfer_enabled=false);",
+      "onshape": {
+        "kind": "PANEL",
+        "panelX": 2,
+        "panelY": 2,
+        "panelFit": "INTERFIT",
+        "panelClearance": 0,
+        "cornerMounts": true,
+        "northMounts": true,
+        "southMounts": true,
+        "eastMounts": true,
+        "westMounts": true,
+        "panelChamfers": false
+      }
+    },
+    {
+      "name": "panel_interfit_partial_square",
+      "module": "models/panel/lib/panel.scad",
+      "call": "panel(units_x=4, units_y=4, panel_type=1, corner_mounts=false, mount_south=false, mount_west=false, chamfer_enabled=false);",
+      "onshape": {
+        "kind": "PANEL",
+        "panelX": 4,
+        "panelY": 4,
+        "panelFit": "INTERFIT",
+        "panelClearance": 0,
+        "cornerMounts": false,
+        "northMounts": true,
+        "southMounts": false,
+        "eastMounts": true,
+        "westMounts": false,
+        "panelChamfers": false,
+        "mateConnectors": false
+      }
+    },
+    {
+      "name": "panel_fullcover_partial_square",
+      "module": "models/panel/lib/panel.scad",
+      "call": "panel(units_x=4, units_y=4, panel_type=2, corner_mounts=false, mount_south=false, mount_west=false, chamfer_enabled=false);",
+      "onshape": {
+        "kind": "PANEL",
+        "panelX": 4,
+        "panelY": 4,
+        "panelFit": "FULL_COVER",
+        "panelClearance": 0,
+        "cornerMounts": false,
+        "northMounts": true,
+        "southMounts": false,
+        "eastMounts": true,
+        "westMounts": false,
+        "panelChamfers": false,
+        "mateConnectors": false
+      }
+    },
+    {
+      "name": "panel_fullcover_corner_relief_square",
+      "module": "models/panel/lib/panel.scad",
+      "call": "panel(units_x=4, units_y=4, panel_type=2, corner_mounts=true, mount_south=false, mount_west=false, chamfer_enabled=false);",
+      "onshape": {
+        "kind": "PANEL",
+        "panelX": 4,
+        "panelY": 4,
+        "panelFit": "FULL_COVER",
+        "panelClearance": 0,
+        "cornerMounts": true,
+        "northMounts": true,
+        "southMounts": false,
+        "eastMounts": true,
+        "westMounts": false,
+        "panelChamfers": false
+      }
     }
   ]
 }

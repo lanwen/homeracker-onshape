@@ -56,7 +56,7 @@ function printTetrahedron(context is Context, id is Id)
 }
 
 function connector(context is Context, id is Id, dimensions is number,
-        ways is number, pull is PullAxis)
+        ways is number, pull is PullAxis, mates is boolean)
 {
     var core = id + "core";
     var cavities = [];
@@ -124,5 +124,20 @@ function connector(context is Context, id is Id, dimensions is number,
                 vector(ARM_INNER, ARM_INNER, p));
         makeBox(context, pass, vector(0, 0, 0) * millimeter, dims);
         cut(context, id + "pullCut", body(core), body(pass));
+    }
+    if (mates)
+    {
+        var names = ["+Z", "-Z", "+X", "-X", "+Y", "-Y"];
+        for (var i in [0, 1, 2, 3, 4, 5])
+        {
+            if (armOn(dimensions, ways, i))
+            {
+                var normal = armCenter(i) / U;
+                // A support end seats at the socket floor, half a grid unit
+                // from the core centre, rather than at the open mouth.
+                assemblyMate(context, id + ("socketMate" ~ i), "Socket " ~ names[i],
+                        qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID), armCenter(i) / 2, normal);
+            }
+        }
     }
 }

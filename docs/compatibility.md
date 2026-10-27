@@ -19,7 +19,7 @@ The Type field controls which inputs appear:
 | --- | --- |
 | Support | Length in 15 mm units, optional X pin holes |
 | Connector | 1–3 dimensions, directions, optional X/Y/Z pull through |
-| Panel | X/Y grid size, InterFit or full cover, per-edge and corner mounts |
+| Panel | X/Y grid size, InterFit or full cover, per-edge and corner mounts, optional chamfers |
 
 For connectors, the Dimensions field sets the number of axes that the connector spans.
 The Directions field sets the number of arms.
@@ -35,6 +35,22 @@ For large panels, turn off corner mounts if adjacent panels need the same pin ho
 The edge mount inputs control the mounting strips.
 On the panel face, north is +Y and south is −Y.
 East is +X and west is −X.
+
+## Assembly points and names
+
+Parts and feature entries get names based on their type and size.
+Turn off Mate connectors if you do not need assembly points.
+Each point belongs to its part and follows it into an assembly.
+
+- Supports have points at both ends and at each pin hole centre.
+- Connectors have a point at each socket floor. Mate a support end here to seat it fully.
+- Panels have points at each pin hole centre and at the centre of the front face.
+
+Mate Z axes follow the connection direction. Use Flip primary axis or Reorient secondary axis
+in the assembly mate dialog when needed.
+Pin-hole points align the hole axes; a mate offset may be needed for the wall thickness and fit clearance.
+Panel Chamfers controls edge bevels and pin hole entrances. It starts enabled.
+Full cover corner relief cuts remain, as in the upstream design.
 
 ## Geometry details
 
@@ -64,7 +80,8 @@ It does not expose the OpenSCAD `optimal_orientation` control for print rotation
 
 The feature compiles in Onshape with standard library `3095.0`.
 Regeneration rebuilds a part from its input values.
-All 15 comparison cases regenerate through the Onshape MCP server without notices.
+All 21 comparison cases regenerate through the Onshape MCP server without notices.
+The checks also verify mate counts, part ownership, and generated part names.
 Each case produces one solid.
 
 Part bounds describe the smallest box around a part.
@@ -99,7 +116,7 @@ mise run test
 `OPENSCAD` and `BOSL2_PATH` can select installed tools.
 The reference task makes sure that their versions and BOSL2 source match the fixed tool versions.
 
-The cases in [comparisons/cases.json](../comparisons/cases.json) cover supports, cross holes, connector arms, pull-throughs, both panel fits, minimum panels, and partial mounts.
+The cases in [comparisons/cases.json](../comparisons/cases.json) cover supports, cross holes, connector arms, pull-throughs, both panel fits, minimum panels, partial mounts, and panels with chamfers disabled.
 The reference task saves meshes under `artifacts/reference/`.
 It also records the inputs, tool versions, and file hashes there.
 

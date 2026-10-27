@@ -28,6 +28,23 @@ def definition_expression(definition):
     return "{ " + ", ".join(fields) + " }"
 
 
+def expected_mate_count(definition):
+    if not definition.get("mateConnectors", True):
+        return 0
+    kind = definition["kind"]
+    if kind == "SUPPORT":
+        return 2 + definition["supportUnits"] * (2 if definition.get("xHoles", False) else 1)
+    if kind == "CONNECTOR":
+        dimensions = definition["connectorDimensions"]
+        return max(dimensions, min(2 * dimensions, definition["connectorWays"]))
+    count = 1 + (8 if definition.get("cornerMounts", True) else 0)
+    for length, sides in [(definition["panelX"], ["northMounts", "southMounts"]),
+                          (definition["panelY"], ["eastMounts", "westMounts"])]:
+        count += (length - 2) * sum(definition.get(side, True) or definition["panelFit"] == "INTERFIT"
+                                     for side in sides)
+    return count
+
+
 def build_validation(source, cases):
     lines = [source.rstrip(), "", "// Generated comparison fixtures; keep out of the distributed feature.",
              'annotation { "Feature Type Name" : "Homeracker comparisons" }',
@@ -42,6 +59,19 @@ def build_validation(source, cases):
             "            const bodies = qBodyType(qCreatedBy(caseId, EntityType.BODY), BodyType.SOLID);",
             "            if (size(evaluateQuery(context, bodies)) != 1)",
             f'                throw regenError("Expected one solid for {name}");',
+            '            const mates = qBodyType(qCreatedBy(caseId, EntityType.BODY), BodyType.MATE_CONNECTOR);',
+            f'            if (size(evaluateQuery(context, mates)) != {expected_mate_count(case["onshape"])})',
+            f'                throw regenError("Unexpected mate count for {name}");',
+            '            if (size(evaluateQuery(context, qMateConnectorsOfParts(bodies))) != size(evaluateQuery(context, mates)))',
+            f'                throw regenError("Unowned mate connector for {name}");',
+            '            println({ "case" : "' + name + '", "part_name" : getProperty(context, { "entity" : bodies, "propertyType" : PropertyType.NAME }),',
+            '                    "mate_count" : size(evaluateQuery(context, mates)) });',
+            '            for (var mate in evaluateQuery(context, mates))',
+            '            {',
+            '                const frame = evMateConnector(context, { "mateConnector" : mate });',
+            '                println({ "case" : "' + name + '", "mate_name" : getProperty(context, { "entity" : mate, "propertyType" : PropertyType.NAME }),',
+            '                        "origin_mm" : frame.origin / millimeter, "z_axis" : frame.zAxis, "x_axis" : frame.xAxis });',
+            '            }',
             '            setProperty(context, { "entities" : bodies, "propertyType" : PropertyType.NAME,',
             f'                    "value" : "{name}" }});',
             "            const bounds = evBox3d(context, { \"topology\" : bodies, \"tight\" : true });",

@@ -21,14 +21,29 @@ function supportHole(context is Context, id is Id, center is Vector, axis is Pul
     }
 }
 
-function support(context is Context, id is Id, units is number, xHoles is boolean)
+function support(context is Context, id is Id, units is number, xHoles is boolean, mates is boolean)
 {
     var bar = id + "bar";
     makeBox(context, bar, vector(0, 0, 0) * millimeter, vector(U, units * U, U));
     bevel(context, id + "edgeChamfer", bar, EDGE);
+    if (mates)
+    {
+        assemblyMate(context, id + "startMate", "Support -Y end", body(bar),
+                vector(0 * millimeter, -units * U / 2, 0 * millimeter), vector(0, -1, 0));
+        assemblyMate(context, id + "endMate", "Support +Y end", body(bar),
+                vector(0 * millimeter, units * U / 2, 0 * millimeter), vector(0, 1, 0));
+    }
     for (var i = 0; i < units; i += 1)
     {
         var c = vector(0 * millimeter, (i - (units - 1) / 2) * U, 0 * millimeter);
+        if (mates)
+        {
+            assemblyMate(context, id + ("pinMate" ~ i), "Support Z pin " ~ (i + 1),
+                    body(bar), c, vector(0, 0, 1));
+            if (xHoles)
+                assemblyMate(context, id + ("xPinMate" ~ i), "Support X pin " ~ (i + 1),
+                        body(bar), c, vector(1, 0, 0));
+        }
         var h = id + ("hole" ~ i);
         supportHole(context, h, c, PullAxis.Z);
         for (var k in [0, 1, 2, 3])

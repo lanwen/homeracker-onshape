@@ -22,3 +22,7 @@ def test_fixture_preserves_feature_source_and_names_independent_cases():
     assert "homeracker(context, caseId" in result
     assert '"value" : "support_3u"' in result
     assert "Expected one solid" in result
+    assert "Unexpected mate count" in result
+    assert "qMateConnectorsOfParts(bodies)" in result
+    assert "evMateConnector" in result
+    assert "part_name" in result

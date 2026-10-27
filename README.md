@@ -4,7 +4,7 @@ Make HomeRacker parts in Onshape with one custom feature:
 
 - **Support**: Set the length and optional X pin holes.
 - **Connector**: Choose the arms and an optional pull-through axis.
-- **Panel**: Choose InterFit or full cover and the mounts.
+- **Panel**: Choose the fit, mounts, and chamfers.
 
 ## Install and use
 
@@ -19,6 +19,8 @@ https://cad.onshape.com/documents/98b88f085d92f997adf9129c/w/d000ce49db154cdce9e
 Select **Homeracker** to add it.
 Then use **Homeracker** from the custom features toolbar.
 
+Parts and feature entries get names based on their type and size.
+Use the mate connectors to join parts in an assembly.
 Hover over a parameter to read what it does.
 
 For document access and version requirements, see the [Onshape instructions](https://cad.onshape.com/help/Content/PartStudio/add_custom_features.htm).

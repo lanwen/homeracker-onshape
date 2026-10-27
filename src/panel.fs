@@ -3,15 +3,17 @@
 // the formulae in models/panel/lib/panel.scad.
 function panel(context is Context, id is Id, nx is number, ny is number,
         fit is PanelFit, clearance is ValueWithUnits, corners is boolean,
-        north is boolean, south is boolean, east is boolean, west is boolean)
+        north is boolean, south is boolean, east is boolean, west is boolean,
+        chamfers is boolean, mates is boolean)
 {
     var w = nx * U - 2 * WALL - FIT;
     var d = ny * U - 2 * WALL - FIT;
     var base = id + "base";
     makeBox(context, base, vector(0 * millimeter, 0 * millimeter, WALL / 2),
             vector(w, d, WALL));
-    bevelExceptPlane(context, id + "baseChamfer", base, EDGE,
-            plane(vector(0 * millimeter, 0 * millimeter, WALL), vector(0, 0, 1)));
+    if (chamfers)
+        bevelExceptPlane(context, id + "baseChamfer", base, EDGE,
+                plane(vector(0 * millimeter, 0 * millimeter, WALL), vector(0, 0, 1)));
 
     if (fit == PanelFit.FULL_COVER)
     {
@@ -20,8 +22,9 @@ function panel(context is Context, id is Id, nx is number, ny is number,
         makeBox(context, cover, vector(0 * millimeter, 0 * millimeter, WALL / 2),
                 vector((nx + 1) * U - clearance,
                        (ny + 1) * U - clearance, WALL));
-        bevelOnPlane(context, id + "coverChamfer", cover, EDGE,
-                plane(vector(0 * millimeter, 0 * millimeter, 0 * millimeter), vector(0, 0, 1)));
+        if (chamfers)
+            bevelOnPlane(context, id + "coverChamfer", cover, EDGE,
+                    plane(vector(0 * millimeter, 0 * millimeter, 0 * millimeter), vector(0, 0, 1)));
         add(context, id + "coverJoin", body(base), body(cover));
     }
 
@@ -48,22 +51,25 @@ function panel(context is Context, id is Id, nx is number, ny is number,
             makeBox(context, legX, vector(x, sy * (d / 2 - WALL / 2), WALL + ch / 2),
                     vector(strip, WALL, ch));
             var outerCorner = vector(sx * w / 2, sy * d / 2, WALL + ch);
-            bevelCorner(context, tag + "xChamfer", legX,
-                    outerCorner, strip, WALL, ch, sx, sy);
-            if (reliefX)
+            if (chamfers)
+                bevelCorner(context, tag + "xChamfer", legX,
+                        outerCorner, strip, WALL, ch, sx, sy);
+            if (reliefX && chamfers)
                 bevelAt(context, tag + "xInnerTop", legX,
                         vector(sx * (w / 2 - strip),
                                sy * (d / 2 - WALL / 2), WALL + ch), EDGE);
             add(context, tag + "joinX", body(base), body(legX));
             makeBox(context, legY, vector(sx * (w / 2 - WALL / 2), y, WALL + ch / 2),
                     vector(WALL, strip, ch));
-            bevelCorner(context, tag + "yChamfer", legY,
-                    outerCorner, WALL, strip, ch, sx, sy);
-            if (reliefY)
+            if (chamfers)
+                bevelCorner(context, tag + "yChamfer", legY,
+                        outerCorner, WALL, strip, ch, sx, sy);
+            if (reliefY && chamfers)
                 bevelAt(context, tag + "yInnerTop", legY,
                         vector(sx * (w / 2 - WALL / 2),
                                sy * (d / 2 - strip), WALL + ch), EDGE);
             add(context, tag + "joinY", body(base), body(legY));
+            // Upstream retains these full-cover clearance cuts even with chamfers off.
             if (reliefX && corners)
             {
                 var innerX = sx * (w / 2 - strip);
@@ -95,11 +101,11 @@ function panel(context is Context, id is Id, nx is number, ny is number,
                 panelPassage(context, hx,
                         vector(sx * (w / 2 - WALL / 2),
                                sy * (d / 2 - strip / 2 + (WALL + FIT) / 2), z),
-                        PullAxis.X, -sx, body(base));
+                        PullAxis.X, -sx, body(base), chamfers, mates);
                 panelPassage(context, hy,
                         vector(sx * (w / 2 - strip / 2 + (WALL + FIT) / 2),
                                sy * (d / 2 - WALL / 2), z),
-                        PullAxis.Y, -sy, body(base));
+                        PullAxis.Y, -sy, body(base), chamfers, mates);
             }
         }
     }
@@ -121,10 +127,10 @@ function panel(context is Context, id is Id, nx is number, ny is number,
             makeBox(context, side + "wall",
                     vector(0 * millimeter, wallY, WALL + h / 2),
                     vector(wallLong, WALL, h));
-            if (mounted)
+            if (mounted && chamfers)
                 bevelMountedWall(context, side + "wallChamfer", side + "wall", true,
                         sy * (d / 2 + WALL + FIT / 2), wallY, long, h);
-            if (!mounted)
+            if (!mounted && chamfers)
                 bevelAt(context, side + "wallChamfer", side + "wall",
                         vector(0 * millimeter, sy * d / 2, WALL + h), EDGE);
             if (mounted)
@@ -132,8 +138,9 @@ function panel(context is Context, id is Id, nx is number, ny is number,
                 makeBox(context, side + "ledge",
                         vector(0 * millimeter, sy * (d / 2 + FIT / 4), WALL / 2),
                         vector(long, 2 * WALL + FIT / 2, WALL));
-                bevelMountLedge(context, side + "ledgeChamfer", side + "ledge", true,
-                        sy * (d / 2 + WALL + FIT / 2), long);
+                if (chamfers)
+                    bevelMountLedge(context, side + "ledgeChamfer", side + "ledge", true,
+                            sy * (d / 2 + WALL + FIT / 2), long);
                 add(context, side + "joinLedge", body(base), body(side + "ledge"));
                 for (var end in [0, 1])
                 {
@@ -144,27 +151,30 @@ function panel(context is Context, id is Id, nx is number, ny is number,
                             vector(s * (long / 2 - WALL / 2),
                                    sy * (d / 2 - WALL / 2), WALL + h / 2),
                             vector(WALL, WALL, h));
-                    bridgeCornerCut(context, bridge + "cornerCut",
-                            vector(s * long / 2, sy * d / 2, WALL + h),
-                            -s, -sy, body(bridgeSolid));
+                    if (chamfers)
+                        bridgeCornerCut(context, bridge + "cornerCut",
+                                vector(s * long / 2, sy * d / 2, WALL + h),
+                                -s, -sy, body(bridgeSolid));
                     add(context, bridge + "join", body(base), body(bridgeSolid));
                     var fill = side + ("filler" ~ end);
                     makeBox(context, fill,
                             vector(s * (long / 2 - WALL / 2),
                                    sy * (d / 2 + FIT / 4), WALL + h / 2),
                             vector(WALL, FIT / 2, h));
-                    bevelAt(context, side + ("fillerChamfer" ~ end), fill,
-                            vector(s * long / 2,
-                                   sy * (d / 2 + FIT / 4), WALL + h), EDGE);
+                    if (chamfers)
+                        bevelAt(context, side + ("fillerChamfer" ~ end), fill,
+                                vector(s * long / 2,
+                                       sy * (d / 2 + FIT / 4), WALL + h), EDGE);
                     add(context, side + ("joinFiller" ~ end), body(base), body(fill));
                     var endFill = side + ("endFiller" ~ end);
                     makeBox(context, endFill,
                             vector(s * (long / 2 + FIT / 4),
                                    sy * (d / 2 - WALL / 2), WALL + h / 2),
                             vector(FIT / 2, WALL, h));
-                    bevelAt(context, side + ("endFillerChamfer" ~ end), endFill,
-                            vector(s * (long / 2 + FIT / 4),
-                                   sy * d / 2, WALL + h), EDGE);
+                    if (chamfers)
+                        bevelAt(context, side + ("endFillerChamfer" ~ end), endFill,
+                                vector(s * (long / 2 + FIT / 4),
+                                       sy * d / 2, WALL + h), EDGE);
                     add(context, side + ("joinEndFiller" ~ end), body(base), body(endFill));
                 }
             }
@@ -178,7 +188,7 @@ function panel(context is Context, id is Id, nx is number, ny is number,
                             vector((i - (nx - 3) / 2) * U,
                                    wallY, WALL + h / 2 +
                                    (fit == PanelFit.FULL_COVER ? WALL / 2 + FIT / 2 : FIT / 2)),
-                            PullAxis.Y, -sy, body(base));
+                            PullAxis.Y, -sy, body(base), chamfers, mates);
                 }
             }
         }
@@ -198,10 +208,10 @@ function panel(context is Context, id is Id, nx is number, ny is number,
             makeBox(context, side + "wall",
                     vector(wallX, 0 * millimeter, WALL + h / 2),
                     vector(WALL, wallLong, h));
-            if (mounted)
+            if (mounted && chamfers)
                 bevelMountedWall(context, side + "wallChamfer", side + "wall", false,
                         sx * (w / 2 + WALL + FIT / 2), wallX, long, h);
-            if (!mounted)
+            if (!mounted && chamfers)
                 bevelAt(context, side + "wallChamfer", side + "wall",
                         vector(sx * w / 2, 0 * millimeter, WALL + h), EDGE);
             if (mounted)
@@ -209,8 +219,9 @@ function panel(context is Context, id is Id, nx is number, ny is number,
                 makeBox(context, side + "ledge",
                         vector(sx * (w / 2 + FIT / 4), 0 * millimeter, WALL / 2),
                         vector(2 * WALL + FIT / 2, long, WALL));
-                bevelMountLedge(context, side + "ledgeChamfer", side + "ledge", false,
-                        sx * (w / 2 + WALL + FIT / 2), long);
+                if (chamfers)
+                    bevelMountLedge(context, side + "ledgeChamfer", side + "ledge", false,
+                            sx * (w / 2 + WALL + FIT / 2), long);
                 add(context, side + "joinLedge", body(base), body(side + "ledge"));
                 for (var end in [0, 1])
                 {
@@ -218,30 +229,33 @@ function panel(context is Context, id is Id, nx is number, ny is number,
                     var bridge = side + ("bridge" ~ end);
                     var bridgeSolid = bridge + "solid";
                     makeBox(context, bridgeSolid,
-                            vector(sx * (w / 2 - WALL / 2),
+                        vector(sx * (w / 2 - WALL / 2),
                                    s * (long / 2 - WALL / 2), WALL + h / 2),
                             vector(WALL, WALL, h));
-                    bridgeCornerCut(context, bridge + "cornerCut",
-                            vector(sx * w / 2, s * long / 2, WALL + h),
-                            -sx, -s, body(bridgeSolid));
+                    if (chamfers)
+                        bridgeCornerCut(context, bridge + "cornerCut",
+                                vector(sx * w / 2, s * long / 2, WALL + h),
+                                -sx, -s, body(bridgeSolid));
                     add(context, bridge + "join", body(base), body(bridgeSolid));
                     var fill = side + ("filler" ~ end);
                     makeBox(context, fill,
                             vector(sx * (w / 2 + FIT / 4),
                                    s * (long / 2 - WALL / 2), WALL + h / 2),
                             vector(FIT / 2, WALL, h));
-                    bevelAt(context, side + ("fillerChamfer" ~ end), fill,
-                            vector(sx * (w / 2 + FIT / 4),
-                                   s * long / 2, WALL + h), EDGE);
+                    if (chamfers)
+                        bevelAt(context, side + ("fillerChamfer" ~ end), fill,
+                                vector(sx * (w / 2 + FIT / 4),
+                                       s * long / 2, WALL + h), EDGE);
                     add(context, side + ("joinFiller" ~ end), body(base), body(fill));
                     var endFill = side + ("endFiller" ~ end);
                     makeBox(context, endFill,
-                            vector(sx * (w / 2 - WALL / 2),
+                        vector(sx * (w / 2 - WALL / 2),
                                    s * (long / 2 + FIT / 4), WALL + h / 2),
                             vector(WALL, FIT / 2, h));
-                    bevelAt(context, side + ("endFillerChamfer" ~ end), endFill,
-                            vector(sx * w / 2,
-                                   s * (long / 2 + FIT / 4), WALL + h), EDGE);
+                    if (chamfers)
+                        bevelAt(context, side + ("endFillerChamfer" ~ end), endFill,
+                                vector(sx * w / 2,
+                                       s * (long / 2 + FIT / 4), WALL + h), EDGE);
                     add(context, side + ("joinEndFiller" ~ end), body(base), body(endFill));
                 }
             }
@@ -255,11 +269,14 @@ function panel(context is Context, id is Id, nx is number, ny is number,
                             vector(wallX,
                                    (i - (ny - 3) / 2) * U, WALL + h / 2 +
                                    (fit == PanelFit.FULL_COVER ? WALL / 2 + FIT / 2 : FIT / 2)),
-                            PullAxis.X, -sx, body(base));
+                            PullAxis.X, -sx, body(base), chamfers, mates);
                 }
             }
         }
     }
+    if (mates)
+        assemblyMate(context, id + "faceMate", "Panel face", body(base),
+                vector(0, 0, 0) * millimeter, vector(0, 0, -1));
     // OpenSCAD's attachable(CENTER) places the centre of the complete
     // plate-and-mount envelope at the origin.
     opTransform(context, id + "centerPanel", {
