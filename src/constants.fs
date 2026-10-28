@@ -13,7 +13,9 @@ export enum HomerackerKind
 {
     annotation { "Name" : "Support" } SUPPORT,
     annotation { "Name" : "Connector" } CONNECTOR,
-    annotation { "Name" : "Panel" } PANEL
+    annotation { "Name" : "Panel" } PANEL,
+    annotation { "Name" : "Sleeve" } SLEEVE,
+    annotation { "Name" : "Flat panel" } FLAT_PANEL
 }
 
 export enum PanelFit

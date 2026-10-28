@@ -317,6 +317,46 @@
         "panelChamfers": false
       },
       "expected_difference": "Onshape disables only flat panel face chamfers; upstream also disables mount and pin-hole entrance chamfers."
+    },
+    {
+      "name": "sleeve_1u",
+      "module": "models/sleeve/lib/sleeve.scad",
+      "call": "sleeve(length=1, disable_chamfer=false);",
+      "onshape": {
+        "kind": "SLEEVE",
+        "sleeveUnits": 1,
+        "sleeveChamfers": true
+      }
+    },
+    {
+      "name": "sleeve_3u",
+      "module": "models/sleeve/lib/sleeve.scad",
+      "call": "sleeve(length=3, disable_chamfer=false);",
+      "onshape": {
+        "kind": "SLEEVE",
+        "sleeveUnits": 3,
+        "sleeveChamfers": true
+      }
+    },
+    {
+      "name": "sleeve_3u_no_chamfer",
+      "module": "models/sleeve/lib/sleeve.scad",
+      "call": "sleeve(length=3, disable_chamfer=true);",
+      "onshape": {
+        "kind": "SLEEVE",
+        "sleeveUnits": 3,
+        "sleeveChamfers": false
+      }
+    },
+    {
+      "name": "sleeve_1u_no_chamfer",
+      "module": "models/sleeve/lib/sleeve.scad",
+      "call": "sleeve(length=1, disable_chamfer=true);",
+      "onshape": {
+        "kind": "SLEEVE",
+        "sleeveUnits": 1,
+        "sleeveChamfers": false
+      }
     }
   ]
 }

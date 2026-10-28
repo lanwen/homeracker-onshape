@@ -20,8 +20,10 @@ def definition_expression(definition):
     for key, value in definition.items():
         if key in enum_types:
             expression = f"{enum_types[key]}.{value}"
-        elif key == "panelClearance":
+        elif key in ("panelClearance", "flatWidth", "flatHeight", "flatThickness"):
             expression = f"{value} * millimeter"
+        elif key == "flatHoles":
+            expression = "[" + ", ".join("{ " + ", ".join(f'"{k}" : {v} * millimeter' for k, v in hole.items()) + " }" for hole in value) + "]"
         else:
             expression = json.dumps(value)
         fields.append(f'"{key}" : {expression}')
@@ -37,6 +39,10 @@ def expected_mate_count(definition):
     if kind == "CONNECTOR":
         dimensions = definition["connectorDimensions"]
         return max(dimensions, min(2 * dimensions, definition["connectorWays"]))
+    if kind == "SLEEVE":
+        return 2 + definition.get("sleeveUnits", 3)
+    if kind == "FLAT_PANEL":
+        return 1 + len(definition.get("flatHoles", []))
     count = 1 + (8 if definition.get("cornerMounts", True) else 0)
     for length, sides in [(definition["panelX"], ["northMounts", "southMounts"]),
                           (definition["panelY"], ["eastMounts", "westMounts"])]:
@@ -52,6 +58,12 @@ def build_validation(source, cases):
              "    precondition {}", "    {"]
     for case in cases:
         name = case["name"]
+        expected_volume_check = []
+        if "expected_volume_mm3" in case:
+            expected_volume_check = [
+                f'            if (abs(evVolume(context, {{ "entities" : bodies }}) / (millimeter ^ 3) - {case["expected_volume_mm3"]}) > 0.000001)',
+                f'                throw regenError("Unexpected volume for {name}");',
+            ]
         lines.extend([
             "        {",
             f'            const caseId = id + "{name}";',
@@ -59,6 +71,7 @@ def build_validation(source, cases):
             "            const bodies = qBodyType(qCreatedBy(caseId, EntityType.BODY), BodyType.SOLID);",
             "            if (size(evaluateQuery(context, bodies)) != 1)",
             f'                throw regenError("Expected one solid for {name}");',
+            *expected_volume_check,
             '            const mates = qBodyType(qCreatedBy(caseId, EntityType.BODY), BodyType.MATE_CONNECTOR);',
             f'            if (size(evaluateQuery(context, mates)) != {expected_mate_count(case["onshape"])})',
             f'                throw regenError("Unexpected mate count for {name}");',
@@ -128,7 +141,11 @@ def main():
     parser.add_argument("--case", action="append")
     args = parser.parse_args()
     manifest = json.loads((ROOT / "comparisons/cases.json").read_text())
-    cases = [c for c in manifest["cases"] if not args.case or c["name"] in args.case]
+    all_cases = manifest["cases"]
+    flat_cases = ROOT / "comparisons/flat-panels.json"
+    if flat_cases.exists():
+        all_cases = [*all_cases, *json.loads(flat_cases.read_text())["cases"]]
+    cases = [c for c in all_cases if not args.case or c["name"] in args.case]
     if not cases or args.case and set(args.case) != {c["name"] for c in cases}:
         parser.error("Unknown case name")
     source = write_bundle(ROOT)

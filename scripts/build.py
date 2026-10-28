@@ -15,6 +15,8 @@ MODULES = (
     "support.fs",
     "connector.fs",
     "panel.fs",
+    "sleeve.fs",
+    "flatPanel.fs",
     "feature.fs",
 )
 

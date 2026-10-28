@@ -28,7 +28,9 @@ Edit the source files by their purpose:
 - `src/geometry.fs`: Shared functions that create geometry
 - `src/support.fs`: Support construction
 - `src/connector.fs`: Connector construction
-- `src/panel.fs`: Panel construction
+- `src/panel.fs`: Side-panel construction
+- `src/sleeve.fs`: Support sleeve construction
+- `src/flatPanel.fs`: Rectangular mounting blanks and face holes
 - `src/feature.fs`: Feature dialog and main function
 
 The bundle uses FeatureScript standard library `3095.0`.

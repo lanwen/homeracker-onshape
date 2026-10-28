@@ -50,7 +50,7 @@ def main():
     commit = subprocess.check_output(["git", "-C", str(upstream), "rev-parse", "HEAD"], text=True).strip()
     if commit != manifest["upstream_commit"]:
         raise SystemExit(f"Upstream revision mismatch: expected {manifest['upstream_commit']}, got {commit}")
-    changed = subprocess.check_output(["git", "-C", str(upstream), "status", "--porcelain", "--", "models/core/lib", "models/panel/lib"], text=True)
+    changed = subprocess.check_output(["git", "-C", str(upstream), "status", "--porcelain", "--", "models/core/lib", "models/panel/lib", "models/sleeve/lib"], text=True)
     if changed:
         raise SystemExit("Upstream geometry has uncommitted changes; use a clean pinned checkout")
     executable = os.environ.get("OPENSCAD", str(ROOT / ".tools/OpenSCAD.app/Contents/MacOS/OpenSCAD"))

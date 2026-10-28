@@ -19,7 +19,9 @@ The Type field controls which inputs appear:
 | --- | --- |
 | Support | Length in 15 mm units, optional X pin holes |
 | Connector | 1–3 dimensions, directions, optional X/Y/Z pull through |
-| Panel | X/Y grid size, InterFit or full cover, per-edge and corner mounts, optional chamfers |
+| Panel | X/Y grid size, InterFit or full cover, per-edge and corner mounts, optional face chamfers |
+| Sleeve | Length in 15 mm units, optional sleeve chamfers |
+| Flat panel | Rectangle width, height, thickness, optional face chamfers, individual square-hole positions and sizes |
 
 For connectors, the Dimensions field sets the number of axes that the connector spans.
 The Directions field sets the number of arms.
@@ -53,6 +55,11 @@ Panel Face chamfers controls only the perimeter of the flat plate and starts ena
 Mounts and pin-hole entrances always stay chamfered.
 Full cover corner relief cuts remain, as in the upstream design.
 
+The flat panel is a native rectangular mounting blank with holes through its face.
+Each hole has its own X/Y position from the centre and square opening size.
+The community [blank panel](https://github.com/kellerlabs/homeracker-community/tree/main/models/blank_panel)
+helped inform this mounting approach. The rectangle has the exact entered dimensions.
+
 ## Geometry details
 
 The support's square pin passage follows the upstream cross sections.
@@ -75,7 +82,7 @@ The outer arm chamfer excludes that plane.
 
 ## Current results and limits
 
-The feature creates supports, connectors, and plain panels.
+The feature creates supports, connectors, side panels, sleeves, and flat mounting blanks.
 
 The feature compiles in Onshape with standard library `3095.0`.
 Regeneration rebuilds a part from its input values.
@@ -87,6 +94,10 @@ Part bounds describe the smallest box around a part.
 For those 15 cases, part bounds match the SCAD references and volume differences are below 0.005%.
 With face chamfers disabled, this port keeps the mount and pin-hole entrance chamfers.
 Upstream disables those too, so the six additional cases have an intentional geometry difference.
+Four sleeve cases also regenerate with owned mate points.
+Their bounds match the SCAD references within 0.000001 mm; volume differences are below 0.005%.
+Six native flat-panel cases check arbitrary positions, custom hole sizes, thin plates, and face chamfers.
+The plain, four-hole, and thin-plate cases have analytical volume checks.
 STEP surface comparison remains pending.
 The numerical results do not establish fit for your printer and material.
 
@@ -117,7 +128,8 @@ mise run test
 `OPENSCAD` and `BOSL2_PATH` can select installed tools.
 The reference task makes sure that their versions and BOSL2 source match the fixed tool versions.
 
-The cases in [comparisons/cases.json](../comparisons/cases.json) cover supports, cross holes, connector arms, pull-throughs, both panel fits, minimum panels, partial mounts, and panels with chamfers disabled.
+The cases in [comparisons/cases.json](../comparisons/cases.json) cover supports, cross holes, connector arms, pull-throughs, both panel fits, minimum panels, partial mounts, panels with face chamfers disabled, and sleeves.
+[comparisons/flat-panels.json](../comparisons/flat-panels.json) holds native rectangular blank fixtures.
 The reference task saves meshes under `artifacts/reference/`.
 It also records the inputs, tool versions, and file hashes there.
 

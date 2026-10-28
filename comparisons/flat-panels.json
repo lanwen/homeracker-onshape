@@ -1,0 +1,136 @@
+{
+  "units": "millimeter",
+  "description": "Native mounting blank checks. Volumes are analytic; no upstream SCAD counterpart is claimed.",
+  "cases": [
+    {
+      "name": "flat_blank_60x45",
+      "onshape": {
+        "kind": "FLAT_PANEL",
+        "flatWidth": 60,
+        "flatHeight": 45,
+        "flatThickness": 2,
+        "flatChamfers": false,
+        "flatHoles": [],
+        "mateConnectors": true
+      },
+      "expected_volume_mm3": 5400
+    },
+    {
+      "name": "flat_four_pins",
+      "onshape": {
+        "kind": "FLAT_PANEL",
+        "flatWidth": 60,
+        "flatHeight": 45,
+        "flatThickness": 2,
+        "flatChamfers": false,
+        "flatHoles": [
+          {
+            "holeX": -22.5,
+            "holeY": -15,
+            "holeSize": 4
+          },
+          {
+            "holeX": 22.5,
+            "holeY": -15,
+            "holeSize": 4
+          },
+          {
+            "holeX": -22.5,
+            "holeY": 15,
+            "holeSize": 4
+          },
+          {
+            "holeX": 22.5,
+            "holeY": 15,
+            "holeSize": 4
+          }
+        ],
+        "mateConnectors": true
+      },
+      "expected_volume_mm3": 5225.578666666667
+    },
+    {
+      "name": "flat_custom_positions",
+      "onshape": {
+        "kind": "FLAT_PANEL",
+        "flatWidth": 73,
+        "flatHeight": 49,
+        "flatThickness": 3,
+        "flatChamfers": false,
+        "flatHoles": [
+          {
+            "holeX": -17.25,
+            "holeY": 8.5,
+            "holeSize": 4
+          },
+          {
+            "holeX": 13,
+            "holeY": -7,
+            "holeSize": 6
+          }
+        ],
+        "mateConnectors": false
+      }
+    },
+    {
+      "name": "flat_thin",
+      "onshape": {
+        "kind": "FLAT_PANEL",
+        "flatWidth": 30,
+        "flatHeight": 30,
+        "flatThickness": 1,
+        "flatChamfers": false,
+        "flatHoles": [
+          {
+            "holeX": 0,
+            "holeY": 0,
+            "holeSize": 4
+          }
+        ],
+        "mateConnectors": true
+      },
+      "expected_volume_mm3": 880.517
+    },
+    {
+      "name": "flat_face_chamfer",
+      "onshape": {
+        "kind": "FLAT_PANEL",
+        "flatWidth": 60,
+        "flatHeight": 45,
+        "flatThickness": 2,
+        "flatChamfers": true,
+        "flatHoles": [
+          {
+            "holeX": -15,
+            "holeY": 0,
+            "holeSize": 4
+          },
+          {
+            "holeX": 15,
+            "holeY": 0,
+            "holeSize": 4
+          }
+        ],
+        "mateConnectors": true
+      }
+    },
+    {
+      "name": "flat_small",
+      "onshape": {
+        "kind": "FLAT_PANEL",
+        "flatWidth": 10,
+        "flatHeight": 10,
+        "flatThickness": 1,
+        "flatChamfers": false,
+        "flatHoles": [
+          {
+            "holeX": 0,
+            "holeY": 0,
+            "holeSize": 1
+          }
+        ],
+        "mateConnectors": true
+      }
+    }
+  ]
+}

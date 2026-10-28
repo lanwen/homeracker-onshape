@@ -4,7 +4,9 @@ Make HomeRacker parts in Onshape with one custom feature:
 
 - **Support**: Set the length and optional X pin holes.
 - **Connector**: Choose the arms and an optional pull-through axis.
-- **Panel**: Choose the fit, mounts, and chamfers.
+- **Panel**: Choose the fit, raised mounts, and face chamfers.
+- **Sleeve**: Wrap a support with a pin-secured sleeve.
+- **Flat panel**: Make a rectangular device-mount blank with pin holes through its face.
 
 ## Install and use
 
