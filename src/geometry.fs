@@ -237,7 +237,7 @@ function passage(context is Context, id is Id, center is Vector,
 }
 
 function panelPassage(context is Context, id is Id, center is Vector,
-        axis is PullAxis, entrySign is number, target is Query, chamfers is boolean, mates is boolean)
+        axis is PullAxis, entrySign is number, target is Query, mates is boolean)
 {
     var straight = id + "straight";
     var dims = axis == PullAxis.X ? vector(WALL + 1 * millimeter, PIN, PIN) :
@@ -248,8 +248,6 @@ function panelPassage(context is Context, id is Id, center is Vector,
         assemblyMate(context, id + "mate", "Panel " ~ (axis == PullAxis.X ? "X" : "Y") ~ " pin (" ~
                         (round(center[0] / (0.1 * millimeter)) / 10) ~ ", " ~ (round(center[1] / (0.1 * millimeter)) / 10) ~ ")", target, center,
                 axis == PullAxis.X ? vector(entrySign, 0, 0) : vector(0, entrySign, 0));
-    if (!chamfers)
-        return;
     var z0 = entrySign < 0 ? -WALL / 2 + LEAD_LIP : WALL / 2 - PIN_BEVEL;
     var z1 = entrySign < 0 ? -WALL / 2 + PIN_BEVEL : WALL / 2 - LEAD_LIP;
     var s0 = entrySign < 0 ? PIN + 2 * PIN_BEVEL : PIN;

@@ -29,3 +29,7 @@ run = ".venv/bin/python -m pytest -q"
 [tasks."build:check"]
 description = "Check that the generated bundle matches local source (offline)"
 run = "python3.12 scripts/build.py --check"
+
+[tasks."release:prepare"]
+description = "Build release files and generate the PDF guide locally"
+run = ".venv/bin/python scripts/build.py && .venv/bin/python scripts/release.py --prepare"

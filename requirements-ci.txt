@@ -1,2 +1,8 @@
 pytest==8.4.2
 PyYAML==6.0.2
+reportlab==5.1.0
+markdown-it-py==4.2.0
+mdurl==0.1.2
+charset-normalizer==3.5.2
+pypdf==6.21.3
+pillow==13.0.0

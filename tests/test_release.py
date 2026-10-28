@@ -18,6 +18,9 @@ def project(tmp_path):
                 'import(path : "onshape/std/geometry.fs", version : "3095.0");\n'
                 if name == "preamble.fs" else f"// {name}\n")
         (source / name).write_text(text, encoding="utf-8")
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs/guide.md").write_text("# HomeRacker\n\nA short guide.\n")
+    (tmp_path / "VERSION").write_text("0.1.0\n")
     return tmp_path
 
 
@@ -55,7 +58,7 @@ def test_prepare_release_checksums_built_assets_and_logo(project):
     logo.write_text("<svg xmlns='http://www.w3.org/2000/svg'/>\n")
     assets = prepare_release(project)
     assert [p.name for p in assets] == [
-        "homeracker.fs", "homeracker.sources.json", "logo.svg", "SHA256SUMS"]
+        "homeracker.fs", "homeracker.sources.json", "homeracker-guide.pdf", "logo.svg", "SHA256SUMS"]
     assert (project / "dist/logo.svg").read_bytes() == logo.read_bytes()
     lines = assets[-1].read_text().splitlines()
     assert lines == [f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}"
@@ -78,5 +81,5 @@ def test_prepare_release_drops_old_logo_when_source_removed(project):
     staged = project / "dist/logo.svg"
     staged.write_text("obsolete")
     assets = prepare_release(project)
-    assert [p.name for p in assets] == ["homeracker.fs", "homeracker.sources.json", "SHA256SUMS"]
+    assert [p.name for p in assets] == ["homeracker.fs", "homeracker.sources.json", "homeracker-guide.pdf", "SHA256SUMS"]
     assert not staged.exists()

@@ -45,8 +45,8 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
                     "Set the gap between adjacent full cover panels. Enter a length, such as 0.5 mm." }
                 isLength(definition.panelClearance, { (millimeter) : [0, 0, 5] } as LengthBoundSpec);
             }
-            annotation { "Name" : "Chamfers", "Default" : true, "Description" :
-                    "Bevel the panel edges and pin hole entrances. Turn off to leave them square." }
+            annotation { "Name" : "Edge chamfers", "Default" : true, "Description" :
+                    "Bevel the panel edges. Turn off to leave the edges square. Pin hole entrances always stay beveled." }
             definition.panelChamfers is boolean;
             annotation { "Name" : "Corner mounts", "Description" :
                     "Add corner mounts with pin holes. Disable these on large panels if adjacent panels need the same pin holes." }

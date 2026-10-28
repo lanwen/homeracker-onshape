@@ -139,6 +139,7 @@ The other release files describe that script:
 - `homeracker.sources.json`: Source line map
 - `SHA256SUMS`: SHA-256 hashes of the release files
 - `logo.svg`: Logo for the Onshape feature icon
+- `homeracker-guide.pdf`: Versioned guide generated from `docs/guide.md`
 
 Releases use semantic version tags, such as `v0.1.0`.
 The header and source line map contain the same version.
@@ -159,8 +160,15 @@ python3.12 scripts/build.py --version 0.1.0
 
 The release notes identify the exact source commit.
 Pushes to `main` trigger releases when source, build, asset, mise, or workflow files change.
-Documentation-only changes do not trigger a release.
+Changes to `docs/guide.md` also trigger a release because the PDF uses its contents.
+README changes and changes to other documentation do not trigger a release.
 The workflow also supports `workflow_dispatch` for a manual release.
+
+To prepare the same assets locally, install `requirements-ci.txt` into `.venv`,
+then run `mise run release:prepare`.
+Edit `docs/guide.md` to change the PDF content. Keep the README brief.
+The PDF uses the release version and keeps the guide's links clickable.
+It is generated in `dist/` and included in `SHA256SUMS`; do not commit it.
 
 ### Sync a release to Onshape
 
@@ -168,8 +176,10 @@ GitHub releases do not update Onshape. You can ask for an MCP sync or do it your
 
 1. Download `homeracker.fs` from the release and open the shared Homeracker Feature Studio.
 2. Replace its code with the downloaded file, then click Commit.
-3. Create a document version with the release tag as its name, such as `v0.1.0`.
-   Add the GitHub release link to its description.
+3. Import `homeracker-guide.pdf` from the same release into the Onshape document.
+4. Create a document version with the release tag as its name, such as `v0.1.0`.
+   Add the GitHub release link to its description. Enable **Publish custom features and tables**
+   to make this public feature searchable; Onshape requires the PDF in that version.
 
 For an existing linked feature, select the new document version in Onshape.
 

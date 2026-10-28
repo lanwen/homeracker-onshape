@@ -9,6 +9,7 @@ import shutil
 import subprocess
 
 from build import write_bundle
+from guide import write_guide
 from versioning import parse_version, read_version
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,10 +59,13 @@ def release_pages(output: str) -> list[dict]:
 
 
 def prepare_release(root: Path = ROOT, version: str | None = None) -> list[Path]:
-    """Check the bundle, copy the optional logo, and write checksums."""
+    """Check the bundle, render its guide, copy the optional logo, and write checksums."""
     write_bundle(root, check=True, version=version)
     dist = root / "dist"
     assets = [dist / name for name in ASSET_NAMES]
+    bundle_version = json.loads((dist / "homeracker.sources.json").read_text()).get("version")
+    assets.append(write_guide(root / "docs/guide.md", dist / "homeracker-guide.pdf",
+                              version or bundle_version or read_version(root)))
     logo = root / LOGO_SOURCE
     staged_logo = dist / "logo.svg"
     if logo.is_file():

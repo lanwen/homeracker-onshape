@@ -49,7 +49,8 @@ Each point belongs to its part and follows it into an assembly.
 Mate Z axes follow the connection direction. Use Flip primary axis or Reorient secondary axis
 in the assembly mate dialog when needed.
 Pin-hole points align the hole axes; a mate offset may be needed for the wall thickness and fit clearance.
-Panel Chamfers controls edge bevels and pin hole entrances. It starts enabled.
+Panel Edge chamfers controls the edge bevels and starts enabled.
+Pin-hole entrances always stay chamfered.
 Full cover corner relief cuts remain, as in the upstream design.
 
 ## Geometry details
@@ -75,17 +76,17 @@ The outer arm chamfer excludes that plane.
 ## Current results and limits
 
 The feature creates supports, connectors, and plain panels.
-It does not create lock pins or panel cutout variants.
-It does not expose the OpenSCAD `optimal_orientation` control for print rotation.
 
 The feature compiles in Onshape with standard library `3095.0`.
 Regeneration rebuilds a part from its input values.
-All 21 comparison cases regenerate through the Onshape MCP server without notices.
+The original 15 comparison cases regenerate through the Onshape MCP server without notices.
 The checks also verify mate counts, part ownership, and generated part names.
 Each case produces one solid.
 
 Part bounds describe the smallest box around a part.
-The part bounds match the SCAD references, and volume differences are below 0.005%.
+For those 15 cases, part bounds match the SCAD references and volume differences are below 0.005%.
+With edge chamfers disabled, this port keeps the pin-hole entrance chamfers.
+Upstream disables those too, so the six additional cases have an intentional geometry difference.
 STEP surface comparison remains pending.
 The numerical results do not establish fit for your printer and material.
 

@@ -6,13 +6,15 @@ on:
       - src/**
       - assets/**
       - scripts/build.py
+      - scripts/guide.py
+      - docs/guide.md
       - scripts/release.py
       - scripts/versioning.py
+      - requirements-ci.txt
       - VERSION
       - scripts/validation.py
       - tests/**
       - mise.toml
-      - requirements-ci.txt
       - requirements.lock
       - .github/workflows/release.yml
   push:
@@ -21,8 +23,11 @@ on:
       - src/**
       - assets/**
       - scripts/build.py
+      - scripts/guide.py
+      - docs/guide.md
       - scripts/release.py
       - scripts/versioning.py
+      - requirements-ci.txt
       - VERSION
       - mise.toml
       - .github/workflows/release.yml
@@ -54,6 +59,7 @@ jobs:
           tests/test_versioning.py
           tests/test_workflow.py
           tests/test_assets.py
+          tests/test_guide.py
 
   release:
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
@@ -77,6 +83,8 @@ jobs:
         uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
         with:
           cache: true
+      - name: Install release dependencies
+        run: python3.12 -m pip install -r requirements-ci.txt
       - name: Select semantic version
         id: version
         shell: bash

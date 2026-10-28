@@ -101,11 +101,11 @@ function panel(context is Context, id is Id, nx is number, ny is number,
                 panelPassage(context, hx,
                         vector(sx * (w / 2 - WALL / 2),
                                sy * (d / 2 - strip / 2 + (WALL + FIT) / 2), z),
-                        PullAxis.X, -sx, body(base), chamfers, mates);
+                        PullAxis.X, -sx, body(base), mates);
                 panelPassage(context, hy,
                         vector(sx * (w / 2 - strip / 2 + (WALL + FIT) / 2),
                                sy * (d / 2 - WALL / 2), z),
-                        PullAxis.Y, -sy, body(base), chamfers, mates);
+                        PullAxis.Y, -sy, body(base), mates);
             }
         }
     }
@@ -188,7 +188,7 @@ function panel(context is Context, id is Id, nx is number, ny is number,
                             vector((i - (nx - 3) / 2) * U,
                                    wallY, WALL + h / 2 +
                                    (fit == PanelFit.FULL_COVER ? WALL / 2 + FIT / 2 : FIT / 2)),
-                            PullAxis.Y, -sy, body(base), chamfers, mates);
+                            PullAxis.Y, -sy, body(base), mates);
                 }
             }
         }
@@ -269,7 +269,7 @@ function panel(context is Context, id is Id, nx is number, ny is number,
                             vector(wallX,
                                    (i - (ny - 3) / 2) * U, WALL + h / 2 +
                                    (fit == PanelFit.FULL_COVER ? WALL / 2 + FIT / 2 : FIT / 2)),
-                            PullAxis.X, -sx, body(base), chamfers, mates);
+                            PullAxis.X, -sx, body(base), mates);
                 }
             }
         }

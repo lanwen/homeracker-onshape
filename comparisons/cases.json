@@ -218,7 +218,8 @@
         "eastMounts": true,
         "westMounts": true,
         "panelChamfers": false
-      }
+      },
+      "expected_difference": "Onshape retains pin-hole entrance chamfers when edge chamfers are disabled; upstream disables both."
     },
     {
       "name": "panel_fullcover_4x3_square",
@@ -236,7 +237,8 @@
         "eastMounts": true,
         "westMounts": true,
         "panelChamfers": false
-      }
+      },
+      "expected_difference": "Onshape retains pin-hole entrance chamfers when edge chamfers are disabled; upstream disables both."
     },
     {
       "name": "panel_interfit_2x2_square",
@@ -254,7 +256,8 @@
         "eastMounts": true,
         "westMounts": true,
         "panelChamfers": false
-      }
+      },
+      "expected_difference": "Onshape retains pin-hole entrance chamfers when edge chamfers are disabled; upstream disables both."
     },
     {
       "name": "panel_interfit_partial_square",
@@ -273,7 +276,8 @@
         "westMounts": false,
         "panelChamfers": false,
         "mateConnectors": false
-      }
+      },
+      "expected_difference": "Onshape retains pin-hole entrance chamfers when edge chamfers are disabled; upstream disables both."
     },
     {
       "name": "panel_fullcover_partial_square",
@@ -292,7 +296,8 @@
         "westMounts": false,
         "panelChamfers": false,
         "mateConnectors": false
-      }
+      },
+      "expected_difference": "Onshape retains pin-hole entrance chamfers when edge chamfers are disabled; upstream disables both."
     },
     {
       "name": "panel_fullcover_corner_relief_square",
@@ -310,7 +315,8 @@
         "eastMounts": true,
         "westMounts": false,
         "panelChamfers": false
-      }
+      },
+      "expected_difference": "Onshape retains pin-hole entrance chamfers when edge chamfers are disabled; upstream disables both."
     }
   ]
 }

@@ -27,6 +27,7 @@ For document access and version requirements, see the [Onshape instructions](htt
 
 ## More information
 
+- [User guide](docs/guide.md): Part settings and assembly points.
 - [Development](docs/development.md): Edit the source and build the script.
 - [Compatibility](docs/compatibility.md): Dimensions, limits, and comparison results.
 - [Latest release](https://github.com/lanwen/homeracker-onshape/releases/latest): Download the complete script.
