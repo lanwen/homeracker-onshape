@@ -58,6 +58,8 @@ function printTetrahedron(context is Context, id is Id)
 function connector(context is Context, id is Id, dimensions is number,
         ways is number, pull is PullAxis, mates is boolean)
 {
+    if (dimensions < 1 || dimensions > 3 || ways < dimensions || ways > 2 * dimensions)
+        throw regenError("Choose 1–2 directions for 1 dimension, 2–4 for 2 dimensions, or 3–6 for 3 dimensions.");
     var core = id + "core";
     var cavities = [];
     makeBox(context, core, vector(0, 0, 0) * millimeter, vector(ARM, ARM, ARM));
@@ -117,13 +119,17 @@ function connector(context is Context, id is Id, dimensions is number,
     }
     if (pull != PullAxis.NONE)
     {
+        var pullTarget = qUnion(evaluateQuery(context,
+                qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID)));
         var pass = id + "pullThrough";
-        var p = 3 * U;
+        var p = 4 * U;
         var dims = pull == PullAxis.X ? vector(p, ARM_INNER, ARM_INNER) :
                 (pull == PullAxis.Y ? vector(ARM_INNER, p, ARM_INNER) :
                 vector(ARM_INNER, ARM_INNER, p));
         makeBox(context, pass, vector(0, 0, 0) * millimeter, dims);
-        cut(context, id + "pullCut", body(core), body(pass));
+        // The printing-base intersection can replace the original core body.
+        // Capture the finished connector before creating the cutter.
+        cut(context, id + "pullCut", pullTarget, body(pass));
     }
     if (mates)
     {

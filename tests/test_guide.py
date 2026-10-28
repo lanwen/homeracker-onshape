@@ -14,8 +14,8 @@ def test_user_guide_has_version_settings_origin_and_working_links(tmp_path):
     pdf = write_guide(ROOT / "docs/guide.md", tmp_path / "guide.pdf", "0.1.2")
     reader = PdfReader(pdf)
     text = "\n".join(page.extract_text() for page in reader.pages)
-    for expected in ["HomeRacker for Onshape", "v0.1.2", "Support", "Connector", "Panel", "Add the feature", "X pin holes", "Directions",
-                     "Face chamfers", "Corner mounts", "Sleeve", "Flat panel", "Square hole size", "Mate connectors", "Patrick", "Kirill Merkushev"]:
+    for expected in ["HomeRacker for Onshape", "v0.1.2", "Support", "Connector", "Panel", "Add the feature", "X pin holes", "Connector shape",
+                     "Face chamfers", "Corner mounts", "Sleeve", "Flat panel", "Mate connectors", "Patrick", "Kirill Merkushev"]:
         assert expected in text
     assert "**" not in text
     links = [str(annotation.get_object()["/A"]["/URI"])

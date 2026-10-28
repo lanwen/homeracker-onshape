@@ -346,7 +346,8 @@
         "kind": "SLEEVE",
         "sleeveUnits": 3,
         "sleeveChamfers": false
-      }
+      },
+      "expected_difference": "Sleeve pin-hole entrances stay chamfered when sleeve edge chamfers are off."
     },
     {
       "name": "sleeve_1u_no_chamfer",
@@ -356,7 +357,8 @@
         "kind": "SLEEVE",
         "sleeveUnits": 1,
         "sleeveChamfers": false
-      }
+      },
+      "expected_difference": "Sleeve pin-hole entrances stay chamfered when sleeve edge chamfers are off."
     }
   ]
 }

@@ -265,9 +265,6 @@ function panel(context is Context, id is Id, nx is number, ny is number,
             }
         }
     }
-    if (mates)
-        assemblyMate(context, id + "faceMate", "Panel face", body(base),
-                vector(0, 0, 0) * millimeter, vector(0, 0, -1));
     // OpenSCAD's attachable(CENTER) places the centre of the complete
     // plate-and-mount envelope at the origin.
     opTransform(context, id + "centerPanel", {

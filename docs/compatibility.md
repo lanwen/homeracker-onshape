@@ -18,15 +18,14 @@ The Type field controls which inputs appear:
 | Type | Inputs |
 | --- | --- |
 | Support | Length in 15 mm units, optional X pin holes |
-| Connector | 1–3 dimensions, directions, optional X/Y/Z pull through |
+| Connector | Named socket shapes, optional X/Y/Z pull through |
 | Panel | X/Y grid size, InterFit or full cover, per-edge and corner mounts, optional face chamfers |
 | Sleeve | Length in 15 mm units, optional sleeve chamfers |
-| Flat panel | Rectangle width, height, thickness, optional face chamfers, individual square-hole positions and sizes |
+| Flat panel | Rectangle grid width and height, thickness, optional face chamfers, individual edge grid positions with 4 mm square pin holes, connector notches |
 
-For connectors, the Dimensions field sets the number of axes that the connector spans.
-The Directions field sets the number of arms.
+Connector shapes select a valid combination of axes and arms.
 The arm order is +Z, −Z, +X, −X, +Y, −Y.
-If the direction count is outside the permitted range, the feature uses the nearest permitted count.
+Legacy programmatic dimension/direction inputs are checked against their permitted ranges.
 
 Panels need a grid of at least 2 × 2 units.
 InterFit panels sit between the supports.
@@ -46,7 +45,7 @@ Each point belongs to its part and follows it into an assembly.
 
 - Supports have points at both ends and at each pin hole centre.
 - Connectors have a point at each socket floor. Mate a support end here to seat it fully.
-- Panels have points at each pin hole centre and at the centre of the front face.
+- Panels have points only at their pin-hole centres.
 
 Mate Z axes follow the connection direction. Use Flip primary axis or Reorient secondary axis
 in the assembly mate dialog when needed.
@@ -56,9 +55,15 @@ Mounts and pin-hole entrances always stay chamfered.
 Full cover corner relief cuts remain, as in the upstream design.
 
 The flat panel is a native rectangular mounting blank with holes through its face.
-Each hole has its own X/Y position from the centre and square opening size.
+Each 4 mm square hole has its own grid column and row.
+Columns count from the left and rows from the top (C1 R1 is top-left); holes sit at edge grid-cell centres.
+Only the first or last row or column can hold a pin hole.
+Each corner can be notched, using a dialog checkbox or a clickable point in the model.
+Notches clear the L-shaped footprint of a 19.2 mm connector core and its two inward arms.
+The signed clearance defaults to 0.2 mm and ranges from -2 to +2 mm.
+Hole placement uses the same footprint and excludes covered cells.
 The community [blank panel](https://github.com/kellerlabs/homeracker-community/tree/main/models/blank_panel)
-helped inform this mounting approach. The rectangle has the exact entered dimensions.
+helped inform this mounting approach. Rectangle width, height, and hole positions use 15 mm grid units; thickness uses a length.
 
 ## Geometry details
 
@@ -95,8 +100,9 @@ For those 15 cases, part bounds match the SCAD references and volume differences
 With face chamfers disabled, this port keeps the mount and pin-hole entrance chamfers.
 Upstream disables those too, so the six additional cases have an intentional geometry difference.
 Four sleeve cases also regenerate with owned mate points.
-Their bounds match the SCAD references within 0.000001 mm; volume differences are below 0.005%.
-Six native flat-panel cases check arbitrary positions, custom hole sizes, thin plates, and face chamfers.
+With sleeve edge chamfers enabled, their bounds match the SCAD references within 0.000001 mm and volume differences are below 0.005%.
+With edge chamfers off, this port keeps the pin-hole entrance chamfers; upstream disables them.
+Ten native flat-panel cases check individual edge grid positions, connector notches, thin plates, and face chamfers.
 The plain, four-hole, and thin-plate cases have analytical volume checks.
 STEP surface comparison remains pending.
 The numerical results do not establish fit for your printer and material.
@@ -205,3 +211,7 @@ To compare one pair of files:
 ```sh
 .venv/bin/python scripts/compare.py reference.stl exported.step --output artifacts/pair.json
 ```
+
+Sleeve pin-hole entrances stay chamfered when sleeve edge chamfers are off.
+Flat panels chamfer only their front perimeter and front hole entrances; the back stays square.
+Both panel types have mate connectors only at their pin holes.

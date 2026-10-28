@@ -15,15 +15,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def definition_expression(definition):
-    enum_types = {"kind": "HomerackerKind", "pullAxis": "PullAxis", "panelFit": "PanelFit"}
+    enum_types = {"kind": "HomerackerKind", "pullAxis": "PullAxis", "panelFit": "PanelFit", "connectorShape": "ConnectorShape"}
     fields = []
     for key, value in definition.items():
         if key in enum_types:
             expression = f"{enum_types[key]}.{value}"
-        elif key in ("panelClearance", "flatWidth", "flatHeight", "flatThickness"):
+        elif key in ("panelClearance", "flatThickness", "flatCornerClearance"):
             expression = f"{value} * millimeter"
         elif key == "flatHoles":
-            expression = "[" + ", ".join("{ " + ", ".join(f'"{k}" : {v} * millimeter' for k, v in hole.items()) + " }" for hole in value) + "]"
+            expression = "[" + ", ".join("{ " + ", ".join(f'"{k}" : {v}' for k, v in {**hole, 'holeRevision': hole.get('holeRevision', 0)}.items()) + " }" for hole in value) + "]"
         else:
             expression = json.dumps(value)
         fields.append(f'"{key}" : {expression}')
@@ -37,13 +37,16 @@ def expected_mate_count(definition):
     if kind == "SUPPORT":
         return 2 + definition["supportUnits"] * (2 if definition.get("xHoles", False) else 1)
     if kind == "CONNECTOR":
-        dimensions = definition["connectorDimensions"]
-        return max(dimensions, min(2 * dimensions, definition["connectorWays"]))
+        shapes = {"END": 1, "STRAIGHT": 2, "ELBOW": 2, "TEE": 3, "CROSS": 4,
+                  "CORNER3": 3, "CORNER4": 4, "FIVE": 5, "SIX": 6}
+        if definition.get("connectorShape") in shapes:
+            return shapes[definition["connectorShape"]]
+        return definition["connectorWays"]
     if kind == "SLEEVE":
         return 2 + definition.get("sleeveUnits", 3)
     if kind == "FLAT_PANEL":
-        return 1 + len(definition.get("flatHoles", []))
-    count = 1 + (8 if definition.get("cornerMounts", True) else 0)
+        return len(definition.get("flatHoles", [{}, {}, {}, {}]))
+    count = (8 if definition.get("cornerMounts", True) else 0)
     for length, sides in [(definition["panelX"], ["northMounts", "southMounts"]),
                           (definition["panelY"], ["eastMounts", "westMounts"])]:
         count += (length - 2) * sum(definition.get(side, True) or definition["panelFit"] == "INTERFIT"
@@ -64,6 +67,39 @@ def build_validation(source, cases):
                 f'            if (abs(evVolume(context, {{ "entities" : bodies }}) / (millimeter ^ 3) - {case["expected_volume_mm3"]}) > 0.000001)',
                 f'                throw regenError("Unexpected volume for {name}");',
             ]
+        notch_checks = []
+        if case["onshape"]["kind"] == "FLAT_PANEL":
+            params = case["onshape"]
+            cx = (params["flatWidthUnits"] - 1) * 7.5
+            cy = (params["flatHeightUnits"] - 1) * 7.5
+            positions = [(-cx, cy), (cx, cy), (-cx, -cy), (cx, -cy)]
+            for corner, key in enumerate(["flatCutNW", "flatCutNE", "flatCutSW", "flatCutSE"]):
+                if not params.get(key, False):
+                    continue
+                gap = params.get("flatCornerClearance", 0.2)
+                sx = 1 if corner in (0, 2) else -1
+                sy = -1 if corner < 2 else 1
+                x, y = positions[corner]
+                length = 9.6 + 22.5
+                offset = (22.5 - 9.6) / 2
+                rectangles = [(x + sx * offset, y, length, 19.2),
+                              (x, y + sy * offset, 19.2, length)]
+                # For negative clearance, verify a slightly inset contracted
+                # footprint is clear. Positive clearance uses the nominal elbow.
+                inset = min(gap, 0) - 0.001
+                for leg, (rx, ry, rw, rh) in enumerate(rectangles):
+                    notch_checks.extend([
+                        '            {',
+                        '                const plateForCheck = qUnion(evaluateQuery(context, bodies));',
+                        f'                const envelope = caseId + "notchEnvelope{corner}Leg{leg}";',
+                        f'                makeBox(context, envelope, vector({rx}, {ry}, 0) * millimeter,',
+                        f'                        vector({rw + 2 * inset}, {rh + 2 * inset}, {params["flatThickness"] + 2}) * millimeter);',
+                        '                const clearance = evDistance(context, { "side0" : plateForCheck, "side1" : body(envelope) });',
+                        f'                if (clearance.distance / millimeter < {gap - inset} - 0.00001)',
+                        f'                    throw regenError("Connector elbow clearance failed for {name}");',
+                        f'                opDeleteBodies(context, caseId + "deleteEnvelope{corner}Leg{leg}", {{ "entities" : body(envelope) }});',
+                        '            }',
+                    ])
         lines.extend([
             "        {",
             f'            const caseId = id + "{name}";',
@@ -72,6 +108,7 @@ def build_validation(source, cases):
             "            if (size(evaluateQuery(context, bodies)) != 1)",
             f'                throw regenError("Expected one solid for {name}");',
             *expected_volume_check,
+            *notch_checks,
             '            const mates = qBodyType(qCreatedBy(caseId, EntityType.BODY), BodyType.MATE_CONNECTOR);',
             f'            if (size(evaluateQuery(context, mates)) != {expected_mate_count(case["onshape"])})',
             f'                throw regenError("Unexpected mate count for {name}");',
@@ -139,7 +176,17 @@ def build_validation(source, cases):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--case", action="append")
+    parser.add_argument("--dialogs", action="store_true", help="Build the dialog behavior checks instead of geometry comparisons")
     args = parser.parse_args()
+    if args.dialogs:
+        if args.case:
+            parser.error("Use --dialogs or --case, not both")
+        source = write_bundle(ROOT).replace("export const homeracker =", "const homeracker =")
+        out = ROOT / "artifacts/homeracker-dialog-checks.fs"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(source + "\n" + (ROOT / "comparisons/dialog-checks.fs").read_text())
+        print(out)
+        return
     manifest = json.loads((ROOT / "comparisons/cases.json").read_text())
     all_cases = manifest["cases"]
     flat_cases = ROOT / "comparisons/flat-panels.json"

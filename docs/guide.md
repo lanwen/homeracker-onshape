@@ -16,6 +16,7 @@ https://cad.onshape.com/documents/98b88f085d92f997adf9129c/w/d000ce49db154cdce9e
 
 Use **Homeracker** from the custom features toolbar to create a part.
 Set **Type** to the part you want. Confirm the feature when the preview looks right.
+Size and primary options are grouped under **Shape**. Expand **Mounts** or **Connector notches** when you need those settings.
 
 ## Support
 
@@ -30,11 +31,9 @@ A support is drawn along the Y axis. A 3-unit support without X pin holes is a u
 
 Connectors join supports along one or more axes. Each arm has a socket for a support.
 
-- **Dimensions**: Chooses how many axes the connector spans. Use 1 for a straight connection, 2 for a flat connection, or 3 for a connection in three dimensions.
-- **Directions**: Sets the number of arms. The range is 1-2 arms for one dimension, 2-4 for two dimensions, or 3-6 for three dimensions. Values outside that range are adjusted automatically.
-- **Pull through axis**: Opens the centre along X, Y, or Z so a support can pass through. Choose None for a connector with socket stops.
+- **Connector shape**: Choose End (2U), Straight (3U), Elbow, T-shape, X-shape, Corner 3-way, Corner 4-way, 5-way, or 6-way.
+- **Pull through axis**: Choose X, Y, or Z to open a support-sized passage through the centre. Choose No pull-through (closed center) to keep the socket stops.
 
-For an elbow, choose 2 dimensions and 2 directions. For a three-arm corner, choose 3 dimensions and 3 directions.
 Arms are added in a fixed order; use the preview to check their positions.
 
 ## Panel
@@ -56,24 +55,24 @@ Start with a 4 x 3 InterFit panel. Check the preview before disabling mounts, es
 A sleeve slides around three sides of a support. Its side holes take lock pins.
 
 - **Length in grid units**: Sets the sleeve length from 1 to 20 units. A small fit allowance makes it 0.2 mm shorter than that grid length.
-- **Sleeve chamfers**: Bevels the sleeve edges and pin-hole entrances, as in the original sleeve.
+- **Sleeve chamfers**: Bevels the sleeve edges. Pin-hole entrances always stay beveled.
 
 The open side points along +Y; the length runs along Z. Use the support-axis or pin mate points to position it on a support.
 
 ## Flat panel
 
-A simple rectangular plate for building your own device mount. Pin holes go through the flat face.
+A flat mounting blank for building your own device mount. Pin holes are fixed at 4 mm square and go through the face at edge grid cells.
 After creating the blank, use Onshape sketches, extrudes, and cuts to add the shapes your device needs.
 
-- **Width / Height**: Sets the full rectangle size along X and Y. Enter lengths, such as 60 mm and 45 mm.
+- **Grid width / Grid height**: Sets the full rectangle size along X and Y in 15 mm units. A 4 x 3 unit plate is 60 x 45 mm.
 - **Thickness**: Sets the plate thickness. Start with 2 mm and increase it when your mount needs more stiffness.
-- **Face chamfers**: Bevels the rectangle perimeter. Pin-hole entrances stay beveled whether this is on or off.
-- **Pin holes**: Add one entry for each mounting position. The list starts empty. Each collapsed row shows its X position, Y position, and square size. Expand a row to edit it, or remove the row to delete a hole.
-- **X from centre / Y from centre**: Sets each hole's position from the plate centre. Negative X goes left; negative Y goes down. Positions are not snapped. Use 15 mm steps when matching the HomeRacker grid.
-- **Square hole size**: Sets each hole's opening. Use 4 mm for standard HomeRacker lock pins.
+- **Face chamfers**: Starts enabled and bevels the front perimeter. Front pin-hole entrances stay beveled; the back stays square.
+- **Connector notches**: Toggle top-left, top-right, bottom-left, or bottom-right to clear an L-shaped connector footprint at that corner, including the next cell along both edges. Click the corner points in the model, or expand the Connector notches group in the dialog. Notch clearance defaults to 0.2 mm and accepts -2 to +2 mm. Positive values make more room; negative values tighten the notch.
+- **Pin holes**: Each new entry takes the next free edge grid cell. Add disappears when all usable cells are filled; remove a hole to bring it back. Starts with one hole in each corner grid cell. Each collapsed row shows its column and row, such as C1 R3. Expand a row to edit it, or remove the row to delete a hole.
+- **Column / Row**: Places the hole at the centre of a 15 mm grid cell. Columns count from the left; rows count from the top, so C1 R1 is the top-left cell. A 4 x 3 unit plate has columns 1-4 and rows 1-3. Holes must use column 1 or 4, or row 1 or 3.
 
-For a 60 x 45 mm plate, try four 4 mm holes at X = -22.5 and +22.5 mm, each at Y = -15 and +15 mm.
-Keep the hole entrances clear of the perimeter and of each other; the feature explains when a position needs more room.
+A new 4 x 3 unit plate (60 x 45 mm) starts with four 4 mm holes at C1 R1, C4 R1, C1 R3, and C4 R3.
+Enabling a notch removes holes it covers. New holes skip those cells.
 
 ## Put parts together
 
@@ -82,9 +81,9 @@ The points belong to the part and move with it when you insert the part into an 
 
 - **Supports** have points at both ends and at each pin-hole centre.
 - **Connectors** have a point at each socket floor. Mate a support end to one of these points to seat it fully.
-- **Panels** have points at their pin-hole centres and at the centre of the front face.
+- **Panels** have points at their pin-hole centres only.
 - **Sleeves** have a support-axis point, an inner-back point, and a point at each pin-hole station.
-- **Flat panels** have a point at each face hole and at the centre of the front face.
+- **Flat panels** have a point at each face hole only.
 
 Use an assembly mate to join two points. Flip or reorient the axes in the mate dialog when needed.
 Pin-hole points align the hole axes; you may need an offset for wall thickness and fit clearance.

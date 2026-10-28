@@ -8,13 +8,13 @@ from validation import build_validation, definition_expression
 def test_fixture_converts_enums_and_lengths_to_featurescript():
     expression = definition_expression({"kind": "PANEL", "panelFit": "FULL_COVER",
                                         "panelClearance": 0.2, "cornerMounts": True,
-                                        "flatHoles": [{"holeX": -15, "holeY": 7.5, "holeSize": 4}]})
+                                        "flatHoles": [{"holeColumn": 1, "holeRow": 3}]})
     assert '"kind" : HomerackerKind.PANEL' in expression
     assert '"panelFit" : PanelFit.FULL_COVER' in expression
     assert '"panelClearance" : 0.2 * millimeter' in expression
     assert '"cornerMounts" : true' in expression
-    assert '"holeX" : -15 * millimeter' in expression
-    assert '"holeY" : 7.5 * millimeter' in expression
+    assert '"holeColumn" : 1' in expression
+    assert '"holeRow" : 3' in expression
 
 
 def test_fixture_preserves_feature_source_and_names_independent_cases():

@@ -210,3 +210,5 @@ If you need an image tab in your own Onshape document:
 
 A GitHub file URL cannot replace the Onshape image import.
 See the [Onshape icon documentation](https://cad.onshape.com/FsDoc/uispec.html#icons) for the import format.
+
+Build the dialog checks with `mise run validation -- --dialogs`, then run the generated `artifacts/homeracker-dialog-checks.fs` through the Onshape MCP test tool. They check hole defaults, the next free edge cell, the hole limit, corner labels, and the square back face.

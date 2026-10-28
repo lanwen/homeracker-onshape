@@ -1,13 +1,11 @@
 // The upstream sleeve hole cutter is 0.01 mm wider than the sleeve. Keeping
 // that extra depth preserves its entrance taper positions after clipping.
 function sleevePassage(context is Context, id is Id, center is Vector,
-        target is Query, chamfers is boolean)
+        target is Query)
 {
     var depth = ARM + LEAD_LIP;
     makeBox(context, id + "straight", center, vector(depth, PIN, PIN));
     cut(context, id + "straightCut", target, body(id + "straight"));
-    if (!chamfers)
-        return;
     for (var side in [0, 1])
     {
         var taper = id + ("lead" ~ side);
@@ -48,7 +46,7 @@ function sleeve(context is Context, id is Id, units is number,
     for (var i = 0; i < units; i += 1)
     {
         var center = vector(0 * millimeter, pinY, (i - (units - 1) / 2) * U);
-        sleevePassage(context, id + ("hole" ~ i), center, body(shell), chamfers);
+        sleevePassage(context, id + ("hole" ~ i), center, body(shell));
     }
     if (mates)
     {

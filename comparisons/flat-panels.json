@@ -6,130 +6,215 @@
       "name": "flat_blank_60x45",
       "onshape": {
         "kind": "FLAT_PANEL",
-        "flatWidth": 60,
-        "flatHeight": 45,
         "flatThickness": 2,
         "flatChamfers": false,
         "flatHoles": [],
-        "mateConnectors": true
+        "mateConnectors": true,
+        "flatWidthUnits": 4,
+        "flatHeightUnits": 3
       },
-      "expected_volume_mm3": 5400
+      "expected_volume_mm3": 5400.0
     },
     {
       "name": "flat_four_pins",
       "onshape": {
         "kind": "FLAT_PANEL",
-        "flatWidth": 60,
-        "flatHeight": 45,
         "flatThickness": 2,
         "flatChamfers": false,
         "flatHoles": [
           {
-            "holeX": -22.5,
-            "holeY": -15,
-            "holeSize": 4
+            "holeColumn": 1,
+            "holeRow": 1
           },
           {
-            "holeX": 22.5,
-            "holeY": -15,
-            "holeSize": 4
+            "holeColumn": 4,
+            "holeRow": 1
           },
           {
-            "holeX": -22.5,
-            "holeY": 15,
-            "holeSize": 4
+            "holeColumn": 1,
+            "holeRow": 3
           },
           {
-            "holeX": 22.5,
-            "holeY": 15,
-            "holeSize": 4
+            "holeColumn": 4,
+            "holeRow": 3
           }
         ],
-        "mateConnectors": true
+        "mateConnectors": true,
+        "flatWidthUnits": 4,
+        "flatHeightUnits": 3
       },
-      "expected_volume_mm3": 5225.578666666667
+      "expected_volume_mm3": 5248.789333333334
     },
     {
       "name": "flat_custom_positions",
       "onshape": {
         "kind": "FLAT_PANEL",
-        "flatWidth": 73,
-        "flatHeight": 49,
         "flatThickness": 3,
         "flatChamfers": false,
         "flatHoles": [
           {
-            "holeX": -17.25,
-            "holeY": 8.5,
-            "holeSize": 4
+            "holeColumn": 1,
+            "holeRow": 3
           },
           {
-            "holeX": 13,
-            "holeY": -7,
-            "holeSize": 6
+            "holeColumn": 4,
+            "holeRow": 1
           }
         ],
-        "mateConnectors": false
+        "mateConnectors": false,
+        "flatWidthUnits": 5,
+        "flatHeightUnits": 3
       }
     },
     {
       "name": "flat_thin",
       "onshape": {
         "kind": "FLAT_PANEL",
-        "flatWidth": 30,
-        "flatHeight": 30,
         "flatThickness": 1,
         "flatChamfers": false,
         "flatHoles": [
           {
-            "holeX": 0,
-            "holeY": 0,
-            "holeSize": 4
+            "holeColumn": 1,
+            "holeRow": 1
           }
         ],
-        "mateConnectors": true
+        "mateConnectors": true,
+        "flatWidthUnits": 2,
+        "flatHeightUnits": 2
       },
-      "expected_volume_mm3": 880.517
+      "expected_volume_mm3": 882.2585
     },
     {
       "name": "flat_face_chamfer",
       "onshape": {
         "kind": "FLAT_PANEL",
-        "flatWidth": 60,
-        "flatHeight": 45,
         "flatThickness": 2,
         "flatChamfers": true,
         "flatHoles": [
           {
-            "holeX": -15,
-            "holeY": 0,
-            "holeSize": 4
+            "holeColumn": 2,
+            "holeRow": 1
           },
           {
-            "holeX": 15,
-            "holeY": 0,
-            "holeSize": 4
+            "holeColumn": 3,
+            "holeRow": 1
           }
         ],
-        "mateConnectors": true
+        "mateConnectors": true,
+        "flatWidthUnits": 4,
+        "flatHeightUnits": 3
       }
     },
     {
       "name": "flat_small",
       "onshape": {
         "kind": "FLAT_PANEL",
-        "flatWidth": 10,
-        "flatHeight": 10,
         "flatThickness": 1,
         "flatChamfers": false,
         "flatHoles": [
           {
-            "holeX": 0,
-            "holeY": 0,
-            "holeSize": 1
+            "holeColumn": 1,
+            "holeRow": 1
           }
         ],
-        "mateConnectors": true
+        "mateConnectors": true,
+        "flatWidthUnits": 1,
+        "flatHeightUnits": 1
+      },
+      "expected_volume_mm3": 207.2585
+    },
+    {
+      "name": "flat_top_corners",
+      "onshape": {
+        "kind": "FLAT_PANEL",
+        "flatWidthUnits": 4,
+        "flatHeightUnits": 3,
+        "flatThickness": 2,
+        "flatChamfers": false,
+        "flatHoles": [
+          {
+            "holeColumn": 1,
+            "holeRow": 3
+          },
+          {
+            "holeColumn": 4,
+            "holeRow": 3
+          }
+        ],
+        "flatCornerClearance": 0.2,
+        "flatCutNW": true,
+        "flatCutNE": true,
+        "flatCutSW": false,
+        "flatCutSE": false
+      }
+    },
+    {
+      "name": "flat_all_corners",
+      "onshape": {
+        "kind": "FLAT_PANEL",
+        "flatWidthUnits": 6,
+        "flatHeightUnits": 6,
+        "flatThickness": 2,
+        "flatChamfers": true,
+        "flatHoles": [
+          {
+            "holeColumn": 1,
+            "holeRow": 3
+          },
+          {
+            "holeColumn": 6,
+            "holeRow": 3
+          }
+        ],
+        "flatCornerClearance": 0.2,
+        "flatCutNW": true,
+        "flatCutNE": true,
+        "flatCutSW": true,
+        "flatCutSE": true
+      }
+    },
+    {
+      "name": "flat_elbow_clearance_tight",
+      "onshape": {
+        "kind": "FLAT_PANEL",
+        "flatWidthUnits": 4,
+        "flatHeightUnits": 4,
+        "flatThickness": 2,
+        "flatChamfers": true,
+        "flatHoles": [
+          {
+            "holeColumn": 4,
+            "holeRow": 1
+          },
+          {
+            "holeColumn": 1,
+            "holeRow": 4
+          }
+        ],
+        "flatCutNW": true,
+        "flatCornerClearance": -2
+      }
+    },
+    {
+      "name": "flat_elbow_clearance_loose",
+      "onshape": {
+        "kind": "FLAT_PANEL",
+        "flatWidthUnits": 4,
+        "flatHeightUnits": 4,
+        "flatThickness": 2,
+        "flatChamfers": true,
+        "flatHoles": [
+          {
+            "holeColumn": 4,
+            "holeRow": 1
+          },
+          {
+            "holeColumn": 1,
+            "holeRow": 4
+          }
+        ],
+        "flatCutNW": true,
+        "flatCornerClearance": 2
       }
     }
   ]
