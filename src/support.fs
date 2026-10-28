@@ -21,8 +21,54 @@ function supportHole(context is Context, id is Id, center is Vector, axis is Pul
     }
 }
 
-function support(context is Context, id is Id, units is number, xHoles is boolean, mates is boolean)
+export enum SupportPinMates
 {
+    annotation { "Name" : "None" } NONE,
+    annotation { "Name" : "Selected rows" } SELECTED,
+    annotation { "Name" : "All rows" } ALL
+}
+
+// Each row has independent +Z, -Z, +X, and -X opening selections.
+// Repeated rows combine their sides without creating duplicate connectors.
+function supportMateRows(mode is SupportPinMates, rows is array, units is number, xHoles is boolean) returns array
+{
+    var selected = [];
+    for (var i = 0; i < units; i += 1)
+        selected = append(selected, [mode == SupportPinMates.ALL, mode == SupportPinMates.ALL,
+                mode == SupportPinMates.ALL && xHoles, mode == SupportPinMates.ALL && xHoles]);
+    if (mode == SupportPinMates.SELECTED)
+        for (var row in rows)
+        {
+            if (!(row.mateRow is number) || row.mateRow < 1 || row.mateRow > units || row.mateRow != round(row.mateRow))
+                throw regenError("Choose a pin mate row from 1 to the support length in grid units.", ["supportMateRows"]);
+            const index = row.mateRow - 1;
+            var sides = selected[index];
+            sides[0] = sides[0] || row.positiveZ != false;
+            sides[1] = sides[1] || row.negativeZ == true;
+            sides[2] = sides[2] || (xHoles && row.positiveX == true);
+            sides[3] = sides[3] || (xHoles && row.negativeX == true);
+            selected[index] = sides;
+        }
+    return selected;
+}
+
+function supportPinMatesAt(context is Context, id is Id, owner is Query, center is Vector,
+        station is number, sides is array)
+{
+    const suffixes = ["pinMate", "oppositePinMate", "xPinMate", "oppositeXPinMate"];
+    const normals = [vector(0, 0, 1), vector(0, 0, -1), vector(1, 0, 0), vector(-1, 0, 0)];
+    const labels = ["Z pin ", "Z pin ", "X pin ", "X pin "];
+    for (var side = 0; side < 4; side += 1)
+        if (sides[side])
+            assemblyMate(context, id + (suffixes[side] ~ station),
+                    "Support " ~ labels[side] ~ (station + 1) ~ (side % 2 == 0 ? " + opening" : " - opening"),
+                    owner, center + normals[side] * U / 2, normals[side], vector(0, 1, 0));
+}
+
+function support(context is Context, id is Id, units is number, xHoles is boolean,
+        mates is boolean, pinMode is SupportPinMates, pinRows is array)
+{
+    const selected = supportMateRows(mates ? pinMode : SupportPinMates.NONE, pinRows, units, xHoles);
     var bar = id + "bar";
     makeBox(context, bar, vector(0, 0, 0) * millimeter, vector(U, units * U, U));
     bevel(context, id + "edgeChamfer", bar, EDGE);
@@ -37,17 +83,7 @@ function support(context is Context, id is Id, units is number, xHoles is boolea
     {
         var c = vector(0 * millimeter, (i - (units - 1) / 2) * U, 0 * millimeter);
         if (mates)
-        {
-            addPinOpeningMates(context, id + ("pinMate" ~ i), id + ("oppositePinMate" ~ i),
-                    "Support Z pin " ~ (i + 1), body(bar),
-                    { "center" : c, "normal" : vector(0, 0, 1), "span" : U,
-                      "along" : vector(0, 1, 0), "inside" : false });
-            if (xHoles)
-                addPinOpeningMates(context, id + ("xPinMate" ~ i), id + ("oppositeXPinMate" ~ i),
-                        "Support X pin " ~ (i + 1), body(bar),
-                        { "center" : c, "normal" : vector(1, 0, 0), "span" : U,
-                          "along" : vector(0, 1, 0), "inside" : false });
-        }
+            supportPinMatesAt(context, id, body(bar), c, i, selected[i]);
         var h = id + ("hole" ~ i);
         supportHole(context, h, c, PullAxis.Z);
         for (var k in [0, 1, 2, 3])

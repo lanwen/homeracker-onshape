@@ -15,7 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def definition_expression(definition):
-    enum_types = {"kind": "HomerackerKind", "pullAxis": "PullAxis", "panelFit": "PanelFit", "connectorShape": "ConnectorShape"}
+    enum_types = {"kind": "HomerackerKind", "pullAxis": "PullAxis", "panelFit": "PanelFit",
+                  "connectorShape": "ConnectorShape", "supportPinMates": "SupportPinMates"}
     fields = []
     for key, value in definition.items():
         if key in enum_types:
@@ -24,6 +25,9 @@ def definition_expression(definition):
             expression = f"{value} * millimeter"
         elif key == "flatHoles":
             expression = "[" + ", ".join("{ " + ", ".join(f'"{k}" : {v}' for k, v in {**hole, 'holeRevision': hole.get('holeRevision', 0)}.items()) + " }" for hole in value) + "]"
+        elif key == "supportMateRows":
+            expression = json.dumps([{"positiveZ": True, "negativeZ": False, "positiveX": False,
+                                      "negativeX": False, **row} for row in value])
         else:
             expression = json.dumps(value)
         fields.append(f'"{key}" : {expression}')
@@ -179,6 +183,21 @@ def connector_mate_checks(case):
     return lines
 
 
+def support_pin_openings(definition):
+    mode = definition.get("supportPinMates", "NONE")
+    if not definition.get("mateConnectors", True) or mode == "NONE":
+        return set()
+    rows = ([{"mateRow": row, "positiveZ": True, "negativeZ": True,
+              "positiveX": True, "negativeX": True}
+             for row in range(1, definition["supportUnits"] + 1)] if mode == "ALL"
+            else definition.get("supportMateRows", []))
+    return {(row["mateRow"] - 1, axis, sign)
+            for row in rows
+            for axis in (["Z", "X"] if definition.get("xHoles", False) else ["Z"])
+            for sign, prefix in [(1, "positive"), (-1, "negative")]
+            if row.get(prefix + axis, axis == "Z" and sign == 1)}
+
+
 def support_mate_checks(case):
     params = case["onshape"]
     if params["kind"] != "SUPPORT" or not params.get("mateConnectors", True):
@@ -194,11 +213,18 @@ def support_mate_checks(case):
             f'                    throw regenError("Incorrect support end mate for {case["name"]} {suffix}");',
             '            }',
         ])
+    openings = support_pin_openings(params)
     for station in range(params["supportUnits"]):
         y = (station - (params["supportUnits"] - 1) / 2) * 15
         for axis in (["Z", "X"] if params.get("xHoles", False) else ["Z"]):
             for sign in [1, -1]:
                 suffix = ("pinMate" if sign == 1 else "oppositePinMate") if axis == "Z" else ("xPinMate" if sign == 1 else "oppositeXPinMate")
+                if (station, axis, sign) not in openings:
+                    lines.extend([
+                        f'            if (size(evaluateQuery(context, qCreatedBy(caseId + "{suffix}{station}", EntityType.BODY))) != 0)',
+                        f'                throw regenError("Unexpected support opening mate for {case["name"]} {suffix}{station}");',
+                    ])
+                    continue
                 origin = [0, y, 0]
                 origin["XYZ".index(axis)] = sign * 7.5
                 normal = [sign if a == axis else 0 for a in "XYZ"]
@@ -219,7 +245,7 @@ def expected_mate_count(definition):
         return 0
     kind = definition["kind"]
     if kind == "SUPPORT":
-        return 2 + 2 * definition["supportUnits"] * (2 if definition.get("xHoles", False) else 1)
+        return 2 + len(support_pin_openings(definition))
     if kind == "CONNECTOR":
         ways, arms = connector_layout(definition)
         pull = definition.get("pullAxis", "NONE")
@@ -390,7 +416,7 @@ def main():
         return
     manifest = json.loads((ROOT / "comparisons/cases.json").read_text())
     all_cases = manifest["cases"]
-    for name in ["flat-panels.json", "core-pin-holes.json"]:
+    for name in ["flat-panels.json", "core-pin-holes.json", "support-mates.json"]:
         native_cases = ROOT / "comparisons" / name
         if native_cases.exists():
             all_cases = [*all_cases, *json.loads(native_cases.read_text())["cases"]]

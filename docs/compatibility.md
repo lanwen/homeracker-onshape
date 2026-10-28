@@ -43,12 +43,16 @@ Parts and feature entries get names based on their type and size.
 Turn off Mate connectors if you do not need assembly points.
 Each point belongs to its part and follows it into an assembly.
 
-- Supports have points at both ends and at both openings of each pin hole.
+- Supports have points at both ends. Pin mates controls which hole openings also get points.
 - Connectors have half-grid seating points and points at both inner openings of each arm pin hole. Pull-through axes use two opening points.
-- Panels have points only at their pin-hole centres.
+- Panels have points at the outer mounting-wall openings. Flat panels use the openings on their square back surface.
 
 Pull-through opening points support a Slider mate for movement along the passage.
 Support pin points sit at their outer openings and face outward.
+Pin mates defaults to None. Selected rows adds only the chosen row and opening sides.
+All rows adds both Z openings and both X openings when X pin holes are enabled.
+Updating an existing feature uses the new default and can remove pin points referenced by assembly mates.
+Set Pin mates to All rows to restore those points.
 Connector pin points sit at inner openings and face into the socket or passage.
 Their secondary axes follow the support length, socket arm, or pull-through direction.
 A Fastened mate between these pin points aligns the holes and places the support against one wall.
@@ -56,7 +60,8 @@ The opposite wall retains the full 0.2 mm fit allowance.
 A mate connector defines a position and direction. The assembly mate controls movement.
 Mate Z axes follow the connection direction. Use Flip primary axis or Reorient secondary axis
 in the assembly mate dialog when needed.
-Panel and sleeve pin points align the hole axes. Use a mate offset for their wall thickness when needed.
+Panel pin points sit on their contact surfaces and face outward.
+Sleeve pin points align the hole axes. Use a mate offset for the sleeve wall thickness when needed.
 Panel Face chamfers controls only the perimeter of the flat plate and starts enabled.
 Mounts and pin-hole entrances always stay chamfered.
 Full cover corner relief cuts remain, as in the upstream design.
@@ -124,6 +129,9 @@ They cover every connector shape with no pull-through or X, Y, and Z pull-throug
 Individual-side cases also cover disabled walls, beveled entrances, and mate positions.
 Six fit cases align a support with a single pin-opening mate and produce no solid interference.
 These cases cover positive and negative arms and core openings.
+Fifteen panel fit cases place a support against panel contact surfaces without gaps or solid interference.
+They cover three flat panel thicknesses and corner and edge mounts for both panel fits.
+Nine support cases cover end-only points, selected rows and sides, all rows, duplicate selections, and disabled points.
 Support pin mates now use opening positions instead of hole centers. Existing assembly mates that reference them move when the feature updates.
 Paired volume tests make sure that unavailable holes leave geometry unchanged.
 STEP surface comparison remains pending.

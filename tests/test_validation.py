@@ -52,3 +52,26 @@ def test_pull_through_uses_two_opening_references_and_keeps_arm_pin_points():
     assert expected_mate_count({**straight, "pullAxis": "Z"}) == 10
     assert expected_mate_count({**straight, "pullAxis": "X"}) == 12
     assert expected_mate_count({**straight, "mateConnectors": False}) == 0
+
+
+def test_support_selection_counts_openings_once_and_ignores_unavailable_x_sides():
+    support = {"kind": "SUPPORT", "supportUnits": 20}
+    assert expected_mate_count(support) == 2
+    assert expected_mate_count({**support, "supportPinMates": "ALL"}) == 42
+    assert expected_mate_count({**support, "supportPinMates": "ALL", "xHoles": True}) == 82
+    selected = {**support, "supportPinMates": "SELECTED", "supportMateRows": [
+        {"mateRow": 3, "positiveX": True},
+        {"mateRow": 3, "negativeZ": True},
+        {"mateRow": 7, "positiveZ": False, "negativeX": True},
+    ]}
+    assert expected_mate_count(selected) == 4
+    assert expected_mate_count({**selected, "xHoles": True}) == 6
+    assert expected_mate_count({**selected, "mateConnectors": False}) == 0
+
+
+def test_fixture_converts_support_selection_to_featurescript():
+    expression = definition_expression({"supportPinMates": "SELECTED",
+                                       "supportMateRows": [{"mateRow": 3, "positiveZ": False, "negativeZ": True}]})
+    assert '"supportPinMates" : SupportPinMates.SELECTED' in expression
+    assert '"positiveZ": false' in expression
+    assert '"negativeZ": true' in expression

@@ -205,16 +205,54 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
             }
 
         }
-        annotation { "Name" : "Mate connectors", "Default" : true, "Description" :
-                    "Add assembly connection points to this part. These move with the part in an assembly." }
-        definition.mateConnectors is boolean;
+        annotation { "Group Name" : "Assembly points", "Collapsed By Default" : false }
+        {
+            annotation { "Name" : "Mate connectors", "Default" : true, "Description" :
+                        "Add assembly connection points that move with this part. Supports always include both end points." }
+            definition.mateConnectors is boolean;
+            if (definition.kind == HomerackerKind.SUPPORT && definition.mateConnectors)
+            {
+                annotation { "Name" : "Pin mates", "Default" : "NONE", "Description" :
+                        "None keeps only the two end points. Selected rows adds points at chosen hole openings. All rows adds every opening." }
+                definition.supportPinMates is SupportPinMates;
+                if (definition.supportPinMates == SupportPinMates.SELECTED)
+                {
+                    annotation { "Name" : "Pin mate rows", "Item name" : "Pin mate row",
+                            "Item label template" : "Row #mateRow", "UIHint" : UIHint.COLLAPSE_ARRAY_ITEMS,
+                            "Description" : "Choose hole rows and opening sides. Row 1 is nearest the -Y end. Each row is 15 mm apart." }
+                    definition.supportMateRows is array;
+                    for (var row in definition.supportMateRows)
+                    {
+                        annotation { "Name" : "Row", "Description" :
+                                "Count holes from the -Y end. Use a row within the support length in grid units." }
+                        isInteger(row.mateRow, { (unitless) : [1, 1, 50] } as IntegerBoundSpec);
+                        annotation { "Name" : "+Z opening", "Default" : true, "Description" :
+                                "Add a point at the opening on the +Z face, pointing outward." }
+                        row.positiveZ is boolean;
+                        annotation { "Name" : "-Z opening", "Description" :
+                                "Add a point at the opening on the -Z face, pointing outward." }
+                        row.negativeZ is boolean;
+                        if (definition.xHoles)
+                        {
+                            annotation { "Name" : "+X opening", "Description" :
+                                    "Add a point at the opening on the +X face, pointing outward." }
+                            row.positiveX is boolean;
+                            annotation { "Name" : "-X opening", "Description" :
+                                    "Add a point at the opening on the -X face, pointing outward." }
+                            row.negativeX is boolean;
+                        }
+                    }
+                }
+            }
+        }
     }
     {
         var label = "HomeRacker";
         if (definition.kind == HomerackerKind.SUPPORT)
         {
             label = label ~ " Support " ~ definition.supportUnits ~ "U" ~ (definition.xHoles ? " cross holes" : "");
-            support(context, id, definition.supportUnits, definition.xHoles, definition.mateConnectors);
+            support(context, id, definition.supportUnits, definition.xHoles, definition.mateConnectors,
+                    definition.supportPinMates, definition.supportMateRows);
         }
         if (definition.kind == HomerackerKind.CONNECTOR)
         {
@@ -276,6 +314,8 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
         "flatCornerClearance" : 0.2 * millimeter,
         "supportUnits" : 3,
         "xHoles" : false,
+        "supportPinMates" : SupportPinMates.NONE,
+        "supportMateRows" : [],
         "connectorShape" : ConnectorShape.LEGACY,
         "connectorDimensions" : 3,
         "connectorWays" : 6,

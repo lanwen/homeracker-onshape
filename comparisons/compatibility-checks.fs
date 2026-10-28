@@ -2,16 +2,24 @@ annotation { "Feature Type Name" : "Compatibility regression" }
 export const compatibilityRegression = defineFeature(function(context is Context, id is Id, definition is map)
     precondition {}
     {
-        const kinds = [HomerackerKind.SUPPORT, HomerackerKind.CONNECTOR, HomerackerKind.PANEL,
-                HomerackerKind.SLEEVE, HomerackerKind.FLAT_PANEL];
-        const expectedCounts = [8, 30, 14, 5, 4];
+        const cases = [
+                { "kind" : HomerackerKind.SUPPORT },
+                { "kind" : HomerackerKind.CONNECTOR },
+                { "kind" : HomerackerKind.PANEL },
+                { "kind" : HomerackerKind.SLEEVE },
+                { "kind" : HomerackerKind.FLAT_PANEL },
+                { "kind" : HomerackerKind.SUPPORT, "xHoles" : true, "supportPinMates" : SupportPinMates.ALL },
+                { "kind" : HomerackerKind.SUPPORT, "xHoles" : true, "supportPinMates" : SupportPinMates.SELECTED,
+                  "supportMateRows" : [{ "mateRow" : 2, "positiveZ" : false, "negativeZ" : true,
+                                        "positiveX" : true, "negativeX" : false }] }];
+        const expectedCounts = [2, 30, 14, 5, 4, 14, 4];
         for (var old in [true, false])
         {
-            for (var k = 0; k < size(kinds); k += 1)
+            for (var k = 0; k < size(cases); k += 1)
             {
                 var target = old ? Old::newContextWithDefaults() : newContextWithDefaults();
                 const partId = newId() + "part";
-                homeracker(target, partId, { "kind" : kinds[k] });
+                homeracker(target, partId, cases[k]);
                 const parts = qBodyType(qCreatedBy(partId, EntityType.BODY), BodyType.SOLID);
                 const mates = qBodyType(qCreatedBy(partId, EntityType.BODY), BodyType.MATE_CONNECTOR);
                 const mateQueries = evaluateQuery(target, mates);
@@ -33,7 +41,7 @@ export const compatibilityRegression = defineFeature(function(context is Context
                             !tolerantEquals(frame.zAxis, move.linear * frames[i].zAxis))
                         throw regenError("Mate connector did not follow its part");
                 }
-                println({ "old" : old, "kind" : kinds[k], "mates" : size(frames) });
+                println({ "old" : old, "kind" : cases[k].kind, "mates" : size(frames) });
             }
         }
     });

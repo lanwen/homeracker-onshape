@@ -189,6 +189,7 @@ function flatPanel(context is Context, id is Id, width is ValueWithUnits,
         }
         cut(context, tag + "cut", body(plate), body(tag + "straight"));
         if (mates)
-            assemblyMate(context, tag + "mate", "Face pin " ~ (i + 1), body(plate), center, vector(0, 0, 1));
+            assemblyMate(context, tag + "mate", "Face pin " ~ (i + 1), body(plate),
+                    center + vector(0 * millimeter, 0 * millimeter, thickness / 2), vector(0, 0, 1));
     }
 }

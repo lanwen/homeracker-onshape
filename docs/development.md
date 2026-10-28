@@ -121,7 +121,7 @@ Open the feature in a Part Studio and try the controls that changed.
 
 The validation script is for a development document only.
 To use a smaller batch, pass a case name with `--case`.
-The cases are in [comparisons/cases.json](../comparisons/cases.json), [flat-panels.json](../comparisons/flat-panels.json), and [core-pin-holes.json](../comparisons/core-pin-holes.json).
+The cases are in [comparisons/cases.json](../comparisons/cases.json), [flat-panels.json](../comparisons/flat-panels.json), [core-pin-holes.json](../comparisons/core-pin-holes.json), and [support-mates.json](../comparisons/support-mates.json).
 
 To test mate attachments in both old and current Part Studios, run:
 

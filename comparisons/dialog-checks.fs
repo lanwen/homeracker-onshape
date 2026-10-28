@@ -2,6 +2,20 @@
 annotation { "Feature Type Name" : "Dialog behavior checks" }
 export const dialogBehaviorChecks = defineFeature(function(context is Context, id is Id, definition is map)
 precondition {} {
+    if (supportMateRows(SupportPinMates.NONE, [], 2, true) !=
+            [[false, false, false, false], [false, false, false, false]])
+        throw regenError("Support default must keep only end points");
+    if (supportMateRows(SupportPinMates.ALL, [], 1, false) != [[true, true, false, false]] ||
+            supportMateRows(SupportPinMates.ALL, [], 1, true) != [[true, true, true, true]])
+        throw regenError("Support all-row selection failed");
+    const selectedRows = [{ "mateRow" : 2 }, { "mateRow" : 2, "negativeZ" : true, "negativeX" : true }];
+    if (supportMateRows(SupportPinMates.SELECTED, selectedRows, 2, true) !=
+            [[false, false, false, false], [true, true, false, true]])
+        throw regenError("Support row sides must combine without duplicates");
+    if (try silent(supportMateRows(SupportPinMates.SELECTED, [{ "mateRow" : 3 }], 2, true)) != undefined ||
+            try silent(supportMateRows(SupportPinMates.SELECTED, [{ "mateRow" : 0 }], 2, true)) != undefined ||
+            try silent(supportMateRows(SupportPinMates.SELECTED, [{ "mateRow" : 1.5 }], 2, true)) != undefined)
+        throw regenError("Out-of-range support mate row accepted");
     if (!(pinCell(2, 3) is PinCell) || canBePinCell({ "column" : 0, "row" : 1 }))
         throw regenError("PinCell type contract failed");
     if (!(notchRectangle(vector(0, 0) * millimeter, vector(1, 2) * millimeter) is NotchRectangle) ||
@@ -76,6 +90,6 @@ precondition {} {
     var mates = evaluateQuery(context,qBodyType(qCreatedBy(id + "flat",EntityType.BODY),BodyType.MATE_CONNECTOR));
     if (size(mates) != 4) throw regenError("Unexpected center mate");
     var first = evMateConnector(context,{ "mateConnector" : mates[0] });
-    if (norm(first.origin/millimeter-vector(-22.5,15,0)) > 0.000001) throw regenError("C1 R1 not top left");
+    if (norm(first.origin/millimeter-vector(-22.5,15,1)) > 0.000001) throw regenError("C1 R1 not on back contact face");
     println("Next cell, edge capacity, removal, notch labels, named shapes, square back, hole-only mates and top-left origin passed");
 },{});

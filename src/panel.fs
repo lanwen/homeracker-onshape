@@ -118,9 +118,13 @@ function panelPassage(context is Context, id is Id, center is Vector,
     makeBox(context, straight, center, dims);
     cut(context, id + "straightCut", target, body(straight));
     if (mates)
+    {
+        // Mate at the outer contact face; the pin lead-in faces the other way.
+        var normal = axis == PullAxis.X ? vector(-entrySign, 0, 0) : vector(0, -entrySign, 0);
         assemblyMate(context, id + "mate", "Panel " ~ (axis == PullAxis.X ? "X" : "Y") ~ " pin (" ~
-                        (round(center[0] / (0.1 * millimeter)) / 10) ~ ", " ~ (round(center[1] / (0.1 * millimeter)) / 10) ~ ")", target, center,
-                axis == PullAxis.X ? vector(entrySign, 0, 0) : vector(0, entrySign, 0));
+                        (round(center[0] / (0.1 * millimeter)) / 10) ~ ", " ~ (round(center[1] / (0.1 * millimeter)) / 10) ~ ")", target,
+                center + normal * WALL / 2, normal);
+    }
     var z0 = entrySign < 0 ? -WALL / 2 + LEAD_LIP : WALL / 2 - PIN_BEVEL;
     var z1 = entrySign < 0 ? -WALL / 2 + PIN_BEVEL : WALL / 2 - LEAD_LIP;
     var s0 = entrySign < 0 ? PIN + 2 * PIN_BEVEL : PIN;

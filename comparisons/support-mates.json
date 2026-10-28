@@ -1,0 +1,116 @@
+{
+  "cases": [
+    {
+      "name": "support_default_3u",
+      "onshape": {
+        "kind": "SUPPORT",
+        "supportUnits": 3
+      }
+    },
+    {
+      "name": "support_ends_20u",
+      "onshape": {
+        "kind": "SUPPORT",
+        "supportUnits": 20,
+        "xHoles": true
+      }
+    },
+    {
+      "name": "support_all_3u",
+      "onshape": {
+        "kind": "SUPPORT",
+        "supportUnits": 3,
+        "supportPinMates": "ALL"
+      }
+    },
+    {
+      "name": "support_all_3u_cross",
+      "onshape": {
+        "kind": "SUPPORT",
+        "supportUnits": 3,
+        "xHoles": true,
+        "supportPinMates": "ALL"
+      }
+    },
+    {
+      "name": "support_selected_sides",
+      "onshape": {
+        "kind": "SUPPORT",
+        "supportUnits": 7,
+        "xHoles": true,
+        "supportPinMates": "SELECTED",
+        "supportMateRows": [
+          {
+            "mateRow": 1,
+            "positiveZ": true
+          },
+          {
+            "mateRow": 7,
+            "positiveZ": false,
+            "negativeZ": true,
+            "positiveX": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "support_selected_duplicates",
+      "onshape": {
+        "kind": "SUPPORT",
+        "supportUnits": 3,
+        "xHoles": true,
+        "supportPinMates": "SELECTED",
+        "supportMateRows": [
+          {
+            "mateRow": 2,
+            "positiveZ": true
+          },
+          {
+            "mateRow": 2,
+            "positiveZ": true,
+            "negativeZ": true,
+            "negativeX": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "support_selected_no_x",
+      "onshape": {
+        "kind": "SUPPORT",
+        "supportUnits": 3,
+        "supportPinMates": "SELECTED",
+        "supportMateRows": [
+          {
+            "mateRow": 2,
+            "positiveZ": false,
+            "positiveX": true,
+            "negativeX": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "support_selected_empty",
+      "onshape": {
+        "kind": "SUPPORT",
+        "supportUnits": 1,
+        "supportPinMates": "SELECTED"
+      }
+    },
+    {
+      "name": "support_selected_disabled",
+      "onshape": {
+        "kind": "SUPPORT",
+        "supportUnits": 1,
+        "mateConnectors": false,
+        "supportPinMates": "SELECTED",
+        "supportMateRows": [
+          {
+            "mateRow": 20
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -31,6 +31,13 @@ Supports are the straight bars between connectors. Their square holes take lock 
 
 A support is drawn along the Y axis. A 3-unit support without X pin holes is a useful starting point.
 
+Assembly points start with both support ends.
+Set Pin mates to None, Selected rows, or All rows.
+For Selected rows, add a row and choose its opening sides.
+Row 1 is the hole nearest the -Y end.
+The row number cannot exceed the support length in grid units.
+X opening controls appear when X pin holes are enabled.
+
 ## Connector
 
 Connectors join supports along one or more axes. Each arm has a socket for a support.
@@ -84,11 +91,11 @@ Enabling a notch removes holes it covers. New holes skip those cells.
 **Mate connectors** adds assembly points to any part type. It starts enabled; turn it off if you do not need them.
 The points belong to the part and move with it when you insert the part into an assembly.
 
-- **Supports** have points at both ends and at both openings of each pin hole. The opening points face outward.
+- **Supports** have points at both ends. Pin mates adds points only at the selected hole openings, or at every opening with All rows.
 - **Connectors** keep seating points for closed sockets. Arm pin holes have points at their inner openings. Core pin holes have points inside the pull-through. These points face into the socket or passage. A pull-through also has an outward point at each end.
-- **Panels** have points at their pin-hole centres only.
+- **Panels** have points at pin-hole openings on the outer mounting-wall surfaces.
 - **Sleeves** have a support-axis point, an inner-back point, and a point at each pin-hole station.
-- **Flat panels** have a point at each face hole only.
+- **Flat panels** have a point at each hole on the square back surface.
 
 For a sliding support, use its end point and a connector Pull-through opening point in a Slider mate.
 The support can move along the passage without rotating.
@@ -97,7 +104,8 @@ This mate aligns the holes and the support length.
 It places the support against the selected wall, with 0.2 mm clearance at the opposite wall.
 
 Use an assembly mate to join two points. Flip or reorient the axes in the mate dialog when needed.
-Panel and sleeve pin points align the hole axes. Use a mate offset for their wall thickness when needed.
+Panel points meet support openings at the contact surface.
+Sleeve pin points align the hole axes. Use a mate offset for the sleeve wall thickness when needed.
 
 Parts and new feature entries get names based on their type and size, such as **HomeRacker Support 3U**.
 A feature name you set yourself stays as you set it.
