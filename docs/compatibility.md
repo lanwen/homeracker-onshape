@@ -18,7 +18,7 @@ The Type field controls which inputs appear:
 | Type | Inputs |
 | --- | --- |
 | Support | Length in 15 mm units, optional X pin holes |
-| Connector | Named socket shapes, optional X/Y/Z pull through |
+| Connector | Named socket shapes, optional X/Y/Z pull-through, separate pin holes in closed core walls |
 | Panel | X/Y grid size, InterFit or full cover, per-edge and corner mounts, optional face chamfers |
 | Sleeve | Length in 15 mm units, optional sleeve chamfers |
 | Flat panel | Rectangle grid width and height, thickness, optional face chamfers, individual edge grid positions with 4 mm square pin holes, connector notches |
@@ -43,13 +43,20 @@ Parts and feature entries get names based on their type and size.
 Turn off Mate connectors if you do not need assembly points.
 Each point belongs to its part and follows it into an assembly.
 
-- Supports have points at both ends and at each pin hole centre.
-- Connectors have a point at each socket floor. Mate a support end here to seat it fully.
+- Supports have points at both ends and at both openings of each pin hole.
+- Connectors have half-grid seating points and points at both inner openings of each arm pin hole. Pull-through axes use two opening points.
 - Panels have points only at their pin-hole centres.
 
+Pull-through opening points support a Slider mate for movement along the passage.
+Support pin points sit at their outer openings and face outward.
+Connector pin points sit at inner openings and face into the socket or passage.
+Their secondary axes follow the support length, socket arm, or pull-through direction.
+A Fastened mate between these pin points aligns the holes and places the support against one wall.
+The opposite wall retains the full 0.2 mm fit allowance.
+A mate connector defines a position and direction. The assembly mate controls movement.
 Mate Z axes follow the connection direction. Use Flip primary axis or Reorient secondary axis
 in the assembly mate dialog when needed.
-Pin-hole points align the hole axes; a mate offset may be needed for the wall thickness and fit clearance.
+Panel and sleeve pin points align the hole axes. Use a mate offset for their wall thickness when needed.
 Panel Face chamfers controls only the perimeter of the flat plate and starts enabled.
 Mounts and pin-hole entrances always stay chamfered.
 Full cover corner relief cuts remain, as in the upstream design.
@@ -75,6 +82,10 @@ The support has 1 mm chamfers on its outer edges.
 Connector arm dimensions and direction selection follow the OpenSCAD construction.
 The connector also follows its hollow arm design and trim for the printing base.
 Its square pin holes have 0.8 mm lead-ins.
+With a pull-through enabled, each closed core wall can have a separate 4 mm square pin hole.
+Each hole crosses one 2 mm wall and has beveled entrances on both sides.
+Sockets and the pull-through axis determine which wall controls appear.
+Each enabled hole has an inward mate point at the inner opening.
 A tetrahedron has four triangular faces.
 Five- and six-way connectors include this shape for printing.
 
@@ -104,6 +115,14 @@ With sleeve edge chamfers enabled, their bounds match the SCAD references within
 With edge chamfers off, this port keeps the pin-hole entrance chamfers; upstream disables them.
 Ten native flat-panel cases check individual edge grid positions, connector notches, thin plates, and face chamfers.
 The plain, four-hole, and thin-plate cases have analytical volume checks.
+After the module refactor, all 35 existing cases retain their recorded v0.1.5 volumes and bounds within 0.000001 mm or mm³.
+The 42 core-wall cases regenerate without notices.
+They cover every connector shape with no pull-through or X, Y, and Z pull-throughs.
+Individual-side cases also cover disabled walls, beveled entrances, and mate positions.
+Six fit cases align a support with a single pin-opening mate and produce no solid interference.
+These cases cover positive and negative arms and core openings.
+Support pin mates now use opening positions instead of hole centers. Existing assembly mates that reference them move when the feature updates.
+Paired volume tests make sure that unavailable holes leave geometry unchanged.
 STEP surface comparison remains pending.
 The numerical results do not establish fit for your printer and material.
 
@@ -136,6 +155,9 @@ The reference task makes sure that their versions and BOSL2 source match the fix
 
 The cases in [comparisons/cases.json](../comparisons/cases.json) cover supports, cross holes, connector arms, pull-throughs, both panel fits, minimum panels, partial mounts, panels with face chamfers disabled, and sleeves.
 [comparisons/flat-panels.json](../comparisons/flat-panels.json) holds native rectangular blank fixtures.
+[comparisons/core-pin-holes.json](../comparisons/core-pin-holes.json) covers core walls, individual side controls, and pull-through interactions.
+[comparisons/baseline-v0.1.5.json](../comparisons/baseline-v0.1.5.json) records volumes and bounds for 35 existing cases.
+These measurements detect changes to existing parts during refactoring.
 The reference task saves meshes under `artifacts/reference/`.
 It also records the inputs, tool versions, and file hashes there.
 

@@ -2,6 +2,16 @@
 annotation { "Feature Type Name" : "Dialog behavior checks" }
 export const dialogBehaviorChecks = defineFeature(function(context is Context, id is Id, definition is map)
 precondition {} {
+    if (!(pinCell(2, 3) is PinCell) || canBePinCell({ "column" : 0, "row" : 1 }))
+        throw regenError("PinCell type contract failed");
+    if (!(notchRectangle(vector(0, 0) * millimeter, vector(1, 2) * millimeter) is NotchRectangle) ||
+            canBeNotchRectangle({ "center" : vector(0, 0) * millimeter, "size" : vector(-1, 2) * millimeter }))
+        throw regenError("NotchRectangle type contract failed");
+    if (!samePinCell({ "holeColumn" : 2, "holeRow" : 3, "holeRevision" : 7 },
+                    { "holeColumn" : 2, "holeRow" : 3, "holeRevision" : 0 }))
+        throw regenError("Dialog metadata changed pin-cell identity");
+    if (canBeConnectorSpec({ "dimensions" : 2, "ways" : 6, "name" : "Invalid" }))
+        throw regenError("Invalid connector layout accepted");
     var panel = { "kind" : HomerackerKind.FLAT_PANEL, "flatWidthUnits" : 3, "flatHeightUnits" : 3,
         "flatThickness" : 2 * millimeter, "flatChamfers" : true, "flatCornerClearance" : 0.2 * millimeter,
         "flatCutNW" : false, "flatCutNE" : false, "flatCutSW" : false, "flatCutSE" : false, "flatHoles" : [] };
@@ -33,8 +43,31 @@ precondition {} {
     for (var shape in [ConnectorShape.END,ConnectorShape.STRAIGHT,ConnectorShape.ELBOW,ConnectorShape.TEE,
             ConnectorShape.CROSS,ConnectorShape.CORNER3,ConnectorShape.CORNER4,ConnectorShape.FIVE,ConnectorShape.SIX]) {
         var spec = connectorShapeSpec(shape);
-        if (spec[1] < spec[0] || spec[1] > 2 * spec[0]) throw regenError("Invalid named shape");
+        if (spec.ways < spec.dimensions || spec.ways > 2 * spec.dimensions) throw regenError("Invalid named shape");
     }
+    for (var dimensions in [1, 2, 3])
+        for (var ways = dimensions; ways <= 2 * dimensions; ways += 1)
+            for (var pull in [PullAxis.NONE, PullAxis.X, PullAxis.Y, PullAxis.Z])
+            {
+                var legacy = { "kind" : HomerackerKind.CONNECTOR, "connectorShape" : ConnectorShape.LEGACY,
+                        "connectorDimensions" : dimensions, "connectorWays" : ways, "pullAxis" : pull };
+                var edited = homerackerEditLogic(context, id, {}, legacy, true, {});
+                var keys = ["connectorWallNegativeZ", "connectorWallPositiveX", "connectorWallNegativeX",
+                            "connectorWallPositiveY", "connectorWallNegativeY"];
+                var indices = [1, 2, 3, 4, 5];
+                var spec = connectorSpec(dimensions, ways, "Test");
+                for (var side = 0; side < size(keys); side += 1)
+                    if (edited[keys[side]] != corePinSideAvailable(spec, indices[side], pull))
+                        throw regenError("Legacy connector wall visibility mismatch");
+                edited.connectorShape = [ConnectorShape.END, ConnectorShape.STRAIGHT,
+                        ConnectorShape.ELBOW, ConnectorShape.TEE, ConnectorShape.CROSS,
+                        ConnectorShape.CORNER3, ConnectorShape.CORNER4, ConnectorShape.FIVE, ConnectorShape.SIX]
+                        [dimensions == 1 ? ways - 1 : (dimensions == 2 ? ways : ways + 2)];
+                edited = homerackerEditLogic(context, id, legacy, edited, false, {});
+                for (var side = 0; side < size(keys); side += 1)
+                    if (edited[keys[side]] != corePinSideAvailable(spec, indices[side], pull))
+                        throw regenError("Named connector wall visibility mismatch");
+            }
     homeracker(context, id + "flat", { "kind" : HomerackerKind.FLAT_PANEL });
     var solid = qBodyType(qCreatedBy(id + "flat", EntityType.BODY), BodyType.SOLID);
     var back = qCoincidesWithPlane(qOwnedByBody(solid,EntityType.FACE),plane(vector(0,0,1)*millimeter,vector(0,0,1)));

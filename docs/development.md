@@ -24,14 +24,21 @@ Git ignores `dist/` because these files come from the source.
 Edit the source files by their purpose:
 
 - `src/preamble.fs`: Language version, standard library import, and license notice
-- `src/constants.fs`: Dimensions and enums, which are named choices
+- `src/constants.fs`: Shared dimensions and part types
 - `src/geometry.fs`: Shared functions that create geometry
+- `src/pinPassage.fs`: Shared square holes with beveled entrances
 - `src/support.fs`: Support construction
 - `src/connector.fs`: Connector construction
 - `src/panel.fs`: Side-panel construction
 - `src/sleeve.fs`: Support sleeve construction
 - `src/flatPanel.fs`: Rectangular mounting blanks and face holes
+- `src/flatPanelDialog.fs`: Flat-panel hole lists and corner controls
 - `src/feature.fs`: Feature dialog and main function
+
+Feature modules own their types and shape rules.
+Named values keep grid cells, notch rectangles, socket layouts, and pin passages together.
+The feature dialog stores plain maps and converts them at the module boundary.
+The shared pin passage function cuts holes in connector arms, core walls, and sleeves.
 
 The bundle uses FeatureScript standard library `3095.0`.
 To change the language or standard library version, edit `src/preamble.fs`.
@@ -108,9 +115,13 @@ It writes `artifacts/homeracker-validation.fs` with an extra Homeracker comparis
 That feature creates the named comparison parts when you run it in Onshape.
 The generated JSON records the source hashes and selected case names.
 
+MCP regeneration tests do not detect every error in dialog conditions.
+Open the Feature Studio and make sure that it reports no errors or warnings.
+Open the feature in a Part Studio and try the controls that changed.
+
 The validation script is for a development document only.
 To use a smaller batch, pass a case name with `--case`.
-The cases are in [comparisons/cases.json](../comparisons/cases.json).
+The cases are in [comparisons/cases.json](../comparisons/cases.json), [flat-panels.json](../comparisons/flat-panels.json), and [core-pin-holes.json](../comparisons/core-pin-holes.json).
 
 ## Use a local build in a Feature Studio
 
@@ -212,3 +223,7 @@ A GitHub file URL cannot replace the Onshape image import.
 See the [Onshape icon documentation](https://cad.onshape.com/FsDoc/uispec.html#icons) for the import format.
 
 Build the dialog checks with `mise run validation -- --dialogs`, then run the generated `artifacts/homeracker-dialog-checks.fs` through the Onshape MCP test tool. They check hole defaults, the next free edge cell, the hole limit, corner labels, and the square back face.
+
+Build the pin-mate fit tests with `mise run validation -- --mates`.
+Run `artifacts/homeracker-mate-fit-checks.fs` through the Onshape MCP test tool.
+The six cases align a support with one pin mate and make sure that the solids do not overlap.

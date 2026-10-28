@@ -12,11 +12,13 @@ MODULES = (
     "preamble.fs",
     "constants.fs",
     "geometry.fs",
+    "pinPassage.fs",
     "support.fs",
     "connector.fs",
     "panel.fs",
     "sleeve.fs",
     "flatPanel.fs",
+    "flatPanelDialog.fs",
     "feature.fs",
 )
 

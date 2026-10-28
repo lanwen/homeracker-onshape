@@ -39,6 +39,52 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
                         "Open the connector center along this axis so a support can pass through." }
                 definition.pullAxis is PullAxis;
             }
+            annotation { "Name" : "Available PositiveX wall", "UIHint" : UIHint.ALWAYS_HIDDEN }
+            definition.connectorWallPositiveX is boolean;
+            annotation { "Name" : "Available NegativeX wall", "UIHint" : UIHint.ALWAYS_HIDDEN }
+            definition.connectorWallNegativeX is boolean;
+            annotation { "Name" : "Available PositiveY wall", "UIHint" : UIHint.ALWAYS_HIDDEN }
+            definition.connectorWallPositiveY is boolean;
+            annotation { "Name" : "Available NegativeY wall", "UIHint" : UIHint.ALWAYS_HIDDEN }
+            definition.connectorWallNegativeY is boolean;
+            annotation { "Name" : "Available NegativeZ wall", "UIHint" : UIHint.ALWAYS_HIDDEN }
+            definition.connectorWallNegativeZ is boolean;
+            if (definition.connectorWallPositiveX ||
+                    definition.connectorWallNegativeX ||
+                    definition.connectorWallPositiveY ||
+                    definition.connectorWallNegativeY ||
+                    definition.connectorWallNegativeZ)
+            {
+                annotation { "Group Name" : "Core pin holes", "Collapsed By Default" : true }
+                {
+                    if (definition.connectorWallPositiveX)
+                    {
+                        annotation { "Name" : "+X wall", "Description" : "Add a 4 mm square hole through this wall into the pull-through. Both entrances stay beveled." }
+                        definition.connectorCorePositiveX is boolean;
+                    }
+                    if (definition.connectorWallNegativeX)
+                    {
+                        annotation { "Name" : "-X wall", "Description" : "Add a 4 mm square hole through this wall into the pull-through. Both entrances stay beveled." }
+                        definition.connectorCoreNegativeX is boolean;
+                    }
+                    if (definition.connectorWallPositiveY)
+                    {
+                        annotation { "Name" : "+Y wall", "Description" : "Add a 4 mm square hole through this wall into the pull-through. Both entrances stay beveled." }
+                        definition.connectorCorePositiveY is boolean;
+                    }
+                    if (definition.connectorWallNegativeY)
+                    {
+                        annotation { "Name" : "-Y wall", "Description" : "Add a 4 mm square hole through this wall into the pull-through. Both entrances stay beveled." }
+                        definition.connectorCoreNegativeY is boolean;
+                    }
+                    if (definition.connectorWallNegativeZ)
+                    {
+                        annotation { "Name" : "-Z wall", "Description" : "Add a 4 mm square hole through this wall into the pull-through. Both entrances stay beveled." }
+                        definition.connectorCoreNegativeZ is boolean;
+                    }
+                }
+            }
+
         }
         if (definition.kind == HomerackerKind.PANEL)
         {
@@ -172,13 +218,16 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
         }
         if (definition.kind == HomerackerKind.CONNECTOR)
         {
-            var spec = connectorShapeSpec(definition.connectorShape);
-            var dimensions = definition.connectorShape == ConnectorShape.LEGACY ? definition.connectorDimensions : spec[0];
-            var ways = definition.connectorShape == ConnectorShape.LEGACY ? definition.connectorWays : spec[1];
-            label = label ~ " Connector " ~ (definition.connectorShape == ConnectorShape.LEGACY ?
-                    (dimensions ~ "D " ~ ways ~ "-way") : spec[2]) ~
+            var spec = definition.connectorShape == ConnectorShape.LEGACY ?
+                    connectorSpec(definition.connectorDimensions, definition.connectorWays,
+                            definition.connectorDimensions ~ "D " ~ definition.connectorWays ~ "-way") :
+                    connectorShapeSpec(definition.connectorShape);
+            label = label ~ " Connector " ~ spec.name ~
                     (definition.pullAxis == PullAxis.NONE ? "" : " pull " ~ definition.pullAxis);
-            connector(context, id, dimensions, ways, definition.pullAxis, definition.mateConnectors);
+            connector(context, id, spec, definition.pullAxis,
+                    corePinHoles(definition.connectorCorePositiveX, definition.connectorCoreNegativeX,
+                            definition.connectorCorePositiveY, definition.connectorCoreNegativeY, definition.connectorCoreNegativeZ),
+                    definition.mateConnectors);
         }
         if (definition.kind == HomerackerKind.PANEL)
         {
@@ -203,17 +252,7 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
                     definition.flatChamfers, definition.flatHoles,
                     [definition.flatCutNW, definition.flatCutNE, definition.flatCutSW, definition.flatCutSE],
                     definition.flatCornerClearance, definition.mateConnectors);
-            var w = definition.flatWidthUnits * U;
-            var h = definition.flatHeightUnits * U;
-            var z = definition.flatThickness / 2 + 1 * millimeter;
-            var selected = [];
-            var flags = [definition.flatCutNW, definition.flatCutNE, definition.flatCutSW, definition.flatCutSE];
-            for (var i in [0, 1, 2, 3])
-                if (flags[i]) selected = append(selected, i);
-            addManipulators(context, id, { "flatCorners" : togglePointsManipulator({
-                    "points" : [vector(-w / 2, h / 2, z), vector(w / 2, h / 2, z),
-                                vector(-w / 2, -h / 2, z), vector(w / 2, -h / 2, z)],
-                    "selectedIndices" : selected, "suppressedIndices" : [] }) });
+            addFlatPanelManipulators(context, id, definition);
         }
         setProperty(context, { "entities" : qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID),
                 "propertyType" : PropertyType.NAME, "value" : label });
@@ -240,6 +279,16 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
         "connectorShape" : ConnectorShape.LEGACY,
         "connectorDimensions" : 3,
         "connectorWays" : 6,
+        "connectorWallPositiveX" : false,
+        "connectorWallNegativeX" : false,
+        "connectorWallPositiveY" : false,
+        "connectorWallNegativeY" : false,
+        "connectorWallNegativeZ" : false,
+        "connectorCorePositiveX" : false,
+        "connectorCoreNegativeX" : false,
+        "connectorCorePositiveY" : false,
+        "connectorCoreNegativeY" : false,
+        "connectorCoreNegativeZ" : false,
         "pullAxis" : PullAxis.NONE,
         "panelX" : 4,
         "panelY" : 3,
@@ -257,121 +306,16 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
 export function homerackerManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
 {
     if (newManipulators.flatCorners != undefined)
-    {
-        var fields = ["flatCutNW", "flatCutNE", "flatCutSW", "flatCutSE"];
-        for (var i in [0, 1, 2, 3])
-            definition[fields[i]] = isIn(i, newManipulators.flatCorners.selectedIndices);
-    }
+        return flatPanelManipulatorChange(definition, newManipulators);
     return definition;
-}
-
-// Seed the dialog array through editing logic; defineFeature defaults only apply
-// to programmatic calls. Once the list is edited, leave the user's holes alone.
-function cornerPinHoles(columns is number, rows is number) returns array
-{
-    var holes = [{ "holeColumn" : 1, "holeRow" : 1, "holeRevision" : 0 }];
-    if (columns > 1)
-        holes = append(holes, { "holeColumn" : columns, "holeRow" : 1, "holeRevision" : 0 });
-    if (rows > 1)
-    {
-        holes = append(holes, { "holeColumn" : 1, "holeRow" : rows, "holeRevision" : 0 });
-        if (columns > 1)
-            holes = append(holes, { "holeColumn" : columns, "holeRow" : rows, "holeRevision" : 0 });
-    }
-    return holes;
 }
 
 export function homerackerEditLogic(context is Context, id is Id, oldDefinition is map,
         definition is map, isCreating is boolean, specifiedParameters is map) returns map
 {
-    // At capacity the labels-only view has remove controls and no Add button.
-    if (definition.kind == HomerackerKind.FLAT_PANEL && oldDefinition.flatAtHoleCapacity == true &&
-            definition.flatFullHoles != undefined && definition.flatFullHoles != oldDefinition.flatFullHoles)
-    {
-        var remaining = [];
-        for (var row in definition.flatFullHoles)
-            for (var hole in oldDefinition.flatHoles)
-                if (hole.holeColumn == row.fullHoleColumn && hole.holeRow == row.fullHoleRow)
-                    remaining = append(remaining, hole);
-        definition.flatHoles = remaining;
-    }
-    var addedHoles = oldDefinition.kind == HomerackerKind.FLAT_PANEL &&
-            oldDefinition.flatHoles != undefined && definition.flatHoles != undefined &&
-            size(definition.flatHoles) > size(oldDefinition.flatHoles);
-    if (isCreating && definition.kind == HomerackerKind.FLAT_PANEL &&
-            specifiedParameters.flatHoles != true)
-    {
-        var enteringFlatPanel = oldDefinition.kind != HomerackerKind.FLAT_PANEL;
-        var previousCorners = oldDefinition.flatWidthUnits != undefined && oldDefinition.flatHeightUnits != undefined ?
-                cornerPinHoles(oldDefinition.flatWidthUnits, oldDefinition.flatHeightUnits) : [];
-        if ((enteringFlatPanel && (definition.flatHoles == undefined || definition.flatHoles == [])) ||
-                definition.flatHoles == previousCorners)
-            definition.flatHoles = cornerPinHoles(definition.flatWidthUnits, definition.flatHeightUnits);
-    }
-    if (definition.kind == HomerackerKind.FLAT_PANEL && addedHoles)
-    {
-        var filled = oldDefinition.flatHoles;
-        var available = flatPanelHoleCells(definition);
-        for (var i = size(oldDefinition.flatHoles); i < size(definition.flatHoles); i += 1)
-        {
-            for (var cell in available)
-            {
-                if (!hasPinCell(filled, cell))
-                {
-                    filled = append(filled, cell);
-                    break;
-                }
-            }
-        }
-        if (size(filled) == size(oldDefinition.flatHoles) && size(filled) > 0)
-            filled[0].holeRevision = (filled[0].holeRevision == undefined ? 0 : filled[0].holeRevision) + 1;
-        definition.flatHoles = filled;
-    }
+    if (definition.kind == HomerackerKind.CONNECTOR)
+        return connectorEditLogic(definition);
     if (definition.kind == HomerackerKind.FLAT_PANEL)
-    {
-        var available = flatPanelHoleCells(definition);
-        definition.flatNoHoleCells = size(available) == 0;
-        // A changed notch or grid may cover holes that were previously usable.
-        if (definition.flatWidthUnits != oldDefinition.flatWidthUnits ||
-                definition.flatHeightUnits != oldDefinition.flatHeightUnits ||
-                definition.flatCutNW != oldDefinition.flatCutNW || definition.flatCutNE != oldDefinition.flatCutNE ||
-                definition.flatCutSW != oldDefinition.flatCutSW || definition.flatCutSE != oldDefinition.flatCutSE ||
-                definition.flatCornerClearance != oldDefinition.flatCornerClearance)
-        {
-            var kept = [];
-            for (var hole in definition.flatHoles)
-                if (hasPinCell(available, hole)) kept = append(kept, hole);
-            definition.flatHoles = kept;
-        }
-    }
-    if (definition.kind == HomerackerKind.FLAT_PANEL)
-    {
-        var available = flatPanelHoleCells(definition);
-        definition.flatAtHoleCapacity = size(available) > 0 && size(definition.flatHoles) >= size(available);
-        var fullRows = [];
-        if (definition.flatAtHoleCapacity)
-            for (var hole in definition.flatHoles)
-                fullRows = append(fullRows, { "fullHoleColumn" : hole.holeColumn, "fullHoleRow" : hole.holeRow });
-        definition.flatFullHoles = fullRows;
-    }
+        return flatPanelEditLogic(context, id, oldDefinition, definition, isCreating, specifiedParameters);
     return definition;
-}
-
-// List the usable edge cells in row order, excluding connector clearances.
-function flatPanelHoleCells(definition is map) returns array
-{
-    var cells = [];
-    var columns = definition.flatWidthUnits;
-    var rows = definition.flatHeightUnits;
-    for (var row = 1; row <= rows; row += 1)
-        for (var column = 1; column <= columns; column += 1)
-        {
-            if (row != 1 && row != rows && column != 1 && column != columns) continue;
-            var cell = { "holeColumn" : column, "holeRow" : row, "holeRevision" : 0 };
-            if (flatHoleFits(columns * U, rows * U, definition.flatThickness, definition.flatChamfers,
-                    [definition.flatCutNW, definition.flatCutNE, definition.flatCutSW, definition.flatCutSE],
-                    definition.flatCornerClearance, cell))
-                cells = append(cells, cell);
-        }
-    return cells;
 }

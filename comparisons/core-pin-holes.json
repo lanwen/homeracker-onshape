@@ -1,0 +1,570 @@
+{
+  "units": "millimeter",
+  "cases": [
+    {
+      "name": "core_end_pull_none",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "END",
+        "pullAxis": "NONE",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_end_pull_x",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "END",
+        "pullAxis": "X",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_end_pull_y",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "END",
+        "pullAxis": "Y",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_end_pull_z",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "END",
+        "pullAxis": "Z",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_straight_pull_none",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "STRAIGHT",
+        "pullAxis": "NONE",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_straight_pull_x",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "STRAIGHT",
+        "pullAxis": "X",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_straight_pull_y",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "STRAIGHT",
+        "pullAxis": "Y",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_straight_pull_z",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "STRAIGHT",
+        "pullAxis": "Z",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_elbow_pull_none",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "ELBOW",
+        "pullAxis": "NONE",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_elbow_pull_x",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "ELBOW",
+        "pullAxis": "X",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_elbow_pull_y",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "ELBOW",
+        "pullAxis": "Y",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_elbow_pull_z",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "ELBOW",
+        "pullAxis": "Z",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_tee_pull_none",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "TEE",
+        "pullAxis": "NONE",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_tee_pull_x",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "TEE",
+        "pullAxis": "X",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_tee_pull_y",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "TEE",
+        "pullAxis": "Y",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_tee_pull_z",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "TEE",
+        "pullAxis": "Z",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_cross_pull_none",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "CROSS",
+        "pullAxis": "NONE",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_cross_pull_x",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "CROSS",
+        "pullAxis": "X",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_cross_pull_y",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "CROSS",
+        "pullAxis": "Y",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_cross_pull_z",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "CROSS",
+        "pullAxis": "Z",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_corner3_pull_none",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "CORNER3",
+        "pullAxis": "NONE",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_corner3_pull_x",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "CORNER3",
+        "pullAxis": "X",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_corner3_pull_y",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "CORNER3",
+        "pullAxis": "Y",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_corner3_pull_z",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "CORNER3",
+        "pullAxis": "Z",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_corner4_pull_none",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "CORNER4",
+        "pullAxis": "NONE",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_corner4_pull_x",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "CORNER4",
+        "pullAxis": "X",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_corner4_pull_y",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "CORNER4",
+        "pullAxis": "Y",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_corner4_pull_z",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "CORNER4",
+        "pullAxis": "Z",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_five_pull_none",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "FIVE",
+        "pullAxis": "NONE",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_five_pull_x",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "FIVE",
+        "pullAxis": "X",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_five_pull_y",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "FIVE",
+        "pullAxis": "Y",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_five_pull_z",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "FIVE",
+        "pullAxis": "Z",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_six_pull_none",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "SIX",
+        "pullAxis": "NONE",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_six_pull_x",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "SIX",
+        "pullAxis": "X",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_six_pull_y",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "SIX",
+        "pullAxis": "Y",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_six_pull_z",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "SIX",
+        "pullAxis": "Z",
+        "connectorCorePositiveX": true,
+        "connectorCoreNegativeX": true,
+        "connectorCorePositiveY": true,
+        "connectorCoreNegativeY": true,
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_wall_positivex",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "END",
+        "pullAxis": "Z",
+        "connectorCorePositiveX": true
+      }
+    },
+    {
+      "name": "core_wall_negativex",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "END",
+        "pullAxis": "Z",
+        "connectorCoreNegativeX": true
+      }
+    },
+    {
+      "name": "core_wall_positivey",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "END",
+        "pullAxis": "X",
+        "connectorCorePositiveY": true
+      }
+    },
+    {
+      "name": "core_wall_negativey",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "END",
+        "pullAxis": "X",
+        "connectorCoreNegativeY": true
+      }
+    },
+    {
+      "name": "core_wall_negativez",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "END",
+        "pullAxis": "X",
+        "connectorCoreNegativeZ": true
+      }
+    },
+    {
+      "name": "core_wall_no_mates",
+      "check_core_holes": true,
+      "onshape": {
+        "kind": "CONNECTOR",
+        "connectorShape": "END",
+        "pullAxis": "Z",
+        "connectorCoreNegativeX": true,
+        "mateConnectors": false
+      }
+    }
+  ]
+}

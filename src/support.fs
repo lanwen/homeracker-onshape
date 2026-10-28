@@ -38,11 +38,15 @@ function support(context is Context, id is Id, units is number, xHoles is boolea
         var c = vector(0 * millimeter, (i - (units - 1) / 2) * U, 0 * millimeter);
         if (mates)
         {
-            assemblyMate(context, id + ("pinMate" ~ i), "Support Z pin " ~ (i + 1),
-                    body(bar), c, vector(0, 0, 1));
+            addPinOpeningMates(context, id + ("pinMate" ~ i), id + ("oppositePinMate" ~ i),
+                    "Support Z pin " ~ (i + 1), body(bar),
+                    { "center" : c, "normal" : vector(0, 0, 1), "span" : U,
+                      "along" : vector(0, 1, 0), "inside" : false });
             if (xHoles)
-                assemblyMate(context, id + ("xPinMate" ~ i), "Support X pin " ~ (i + 1),
-                        body(bar), c, vector(1, 0, 0));
+                addPinOpeningMates(context, id + ("xPinMate" ~ i), id + ("oppositeXPinMate" ~ i),
+                        "Support X pin " ~ (i + 1), body(bar),
+                        { "center" : c, "normal" : vector(1, 0, 0), "span" : U,
+                          "along" : vector(0, 1, 0), "inside" : false });
         }
         var h = id + ("hole" ~ i);
         supportHole(context, h, c, PullAxis.Z);

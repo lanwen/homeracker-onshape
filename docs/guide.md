@@ -5,6 +5,10 @@ Each grid unit is 15 mm. Choose a part type, then set its size and options.
 Hover over a setting in Onshape for a short explanation.
 See the [HomeRacker model guide](https://homeracker.org/models/) for more detail on the original parameters.
 
+Based on [HomeRacker](https://github.com/kellerlabs/homeracker) by Patrick Pötz (kellervater).
+The [community blank panel](https://github.com/kellerlabs/homeracker-community/tree/main/models/blank_panel) also helped inform the flat mounting concept.
+The Onshape port is maintained by Kirill Merkushev in the [homeracker-onshape project](https://github.com/lanwen/homeracker-onshape).
+
 ## Add the feature
 
 In an editable Part Studio, open **Add custom features** from the toolbar.
@@ -32,6 +36,7 @@ A support is drawn along the Y axis. A 3-unit support without X pin holes is a u
 Connectors join supports along one or more axes. Each arm has a socket for a support.
 
 - **Connector shape**: Choose End (2U), Straight (3U), Elbow, T-shape, X-shape, Corner 3-way, Corner 4-way, 5-way, or 6-way.
+- **Core pin holes**: With a pull-through enabled, choose each closed wall that needs a pin hole. Each hole is 4 mm square with beveled entrances. Only walls without sockets appear.
 - **Pull through axis**: Choose X, Y, or Z to open a support-sized passage through the centre. Choose No pull-through (closed center) to keep the socket stops.
 
 Arms are added in a fixed order; use the preview to check their positions.
@@ -79,20 +84,20 @@ Enabling a notch removes holes it covers. New holes skip those cells.
 **Mate connectors** adds assembly points to any part type. It starts enabled; turn it off if you do not need them.
 The points belong to the part and move with it when you insert the part into an assembly.
 
-- **Supports** have points at both ends and at each pin-hole centre.
-- **Connectors** have a point at each socket floor. Mate a support end to one of these points to seat it fully.
+- **Supports** have points at both ends and at both openings of each pin hole. The opening points face outward.
+- **Connectors** keep seating points for closed sockets. Arm pin holes have points at their inner openings. Core pin holes have points inside the pull-through. These points face into the socket or passage. A pull-through also has an outward point at each end.
 - **Panels** have points at their pin-hole centres only.
 - **Sleeves** have a support-axis point, an inner-back point, and a point at each pin-hole station.
 - **Flat panels** have a point at each face hole only.
 
+For a sliding support, use its end point and a connector Pull-through opening point in a Slider mate.
+The support can move along the passage without rotating.
+For a fixed position, use a Fastened mate between a support pin opening and the connector's inner pin opening.
+This mate aligns the holes and the support length.
+It places the support against the selected wall, with 0.2 mm clearance at the opposite wall.
+
 Use an assembly mate to join two points. Flip or reorient the axes in the mate dialog when needed.
-Pin-hole points align the hole axes; you may need an offset for wall thickness and fit clearance.
+Panel and sleeve pin points align the hole axes. Use a mate offset for their wall thickness when needed.
 
 Parts and new feature entries get names based on their type and size, such as **HomeRacker Support 3U**.
 A feature name you set yourself stays as you set it.
-
-## About this feature
-
-Based on [HomeRacker](https://github.com/kellerlabs/homeracker) by Patrick Pötz (kellervater).
-The [community blank panel](https://github.com/kellerlabs/homeracker-community/tree/main/models/blank_panel) also helped inform the flat mounting concept.
-The Onshape port is maintained by Kirill Merkushev in the [homeracker-onshape project](https://github.com/lanwen/homeracker-onshape).

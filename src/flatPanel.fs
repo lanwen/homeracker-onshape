@@ -1,3 +1,61 @@
+// Domain values are separate from the plain parameter maps stored by Onshape.
+export type PinCell typecheck canBePinCell;
+
+export predicate canBePinCell(value)
+{
+    value is map;
+    value.column is number;
+    value.row is number;
+    value.column == round(value.column) && value.column >= 1;
+    value.row == round(value.row) && value.row >= 1;
+}
+
+function pinCell(column is number, row is number) returns PinCell
+{
+    var cell = { "column" : column, "row" : row };
+    if (!canBePinCell(cell))
+        throw regenError("A pin-hole cell needs a positive whole column and row.");
+    return cell as PinCell;
+}
+
+// Preserve the saved dialog schema, including its array-update stamp.
+function pinCellFromHole(hole is map) returns PinCell
+{
+    var cell = { "column" : hole.holeColumn, "row" : hole.holeRow };
+    if (!canBePinCell(cell))
+        throw regenError("A pin-hole cell needs a positive whole column and row.", ["flatHoles"]);
+    return cell as PinCell;
+}
+
+function pinHoleDefinition(cell is PinCell) returns map
+{
+    return { "holeColumn" : cell.column, "holeRow" : cell.row, "holeRevision" : 0 };
+}
+
+export type NotchRectangle typecheck canBeNotchRectangle;
+
+export predicate canBeNotchRectangle(value)
+{
+    value is map;
+    value.center is Vector;
+    size(value.center) == 2;
+    isLength(value.center[0]);
+    isLength(value.center[1]);
+    value.size is Vector;
+    size(value.size) == 2;
+    isLength(value.size[0]);
+    isLength(value.size[1]);
+    value.size[0] > 0 * millimeter && value.size[1] > 0 * millimeter;
+}
+
+function notchRectangle(center is Vector, dimensions is Vector) returns NotchRectangle
+{
+    var rectangle = { "center" : center, "size" : dimensions };
+    if (!canBeNotchRectangle(rectangle))
+        throw regenError("A connector notch needs a 2D centre and positive length dimensions.");
+    return rectangle as NotchRectangle;
+}
+
 // Two overlapping rectangles cover a connector core and its two inward arms.
 // Corner indices: top-left, top-right, bottom-left, bottom-right.
 function flatNotchRectangles(width is ValueWithUnits, height is ValueWithUnits,
@@ -9,16 +67,16 @@ function flatNotchRectangles(width is ValueWithUnits, height is ValueWithUnits,
     var length = ARM / 2 + 1.5 * U;
     var offset = (1.5 * U - ARM / 2) / 2;
     return [
-        { "center" : core + vector(sx * offset, 0 * millimeter),
-          "size" : vector(length + 2 * clearance, ARM + 2 * clearance) },
-        { "center" : core + vector(0 * millimeter, sy * offset),
-          "size" : vector(ARM + 2 * clearance, length + 2 * clearance) }
+        notchRectangle(core + vector(sx * offset, 0 * millimeter),
+                vector(length + 2 * clearance, ARM + 2 * clearance)),
+        notchRectangle(core + vector(0 * millimeter, sy * offset),
+                vector(ARM + 2 * clearance, length + 2 * clearance))
     ];
 }
 
 function samePinCell(a is map, b is map) returns boolean
 {
-    return a.holeColumn == b.holeColumn && a.holeRow == b.holeRow;
+    return pinCellFromHole(a) == pinCellFromHole(b);
 }
 
 function hasPinCell(cells is array, cell is map) returns boolean
@@ -30,15 +88,15 @@ function hasPinCell(cells is array, cell is map) returns boolean
 
 function flatHoleFits(width is ValueWithUnits, height is ValueWithUnits,
         thickness is ValueWithUnits, faceChamfers is boolean, cutCorners is array,
-        clearance is ValueWithUnits, hole is map) returns boolean
+        clearance is ValueWithUnits, cell is PinCell) returns boolean
 {
     var columns = round(width / U);
     var rows = round(height / U);
-    if (hole.holeColumn < 1 || hole.holeColumn > columns || hole.holeRow < 1 || hole.holeRow > rows)
+    if (cell.column < 1 || cell.column > columns || cell.row < 1 || cell.row > rows)
         return false;
-    if (hole.holeColumn != 1 && hole.holeColumn != columns && hole.holeRow != 1 && hole.holeRow != rows)
+    if (cell.column != 1 && cell.column != columns && cell.row != 1 && cell.row != rows)
         return false;
-    var point = vector((hole.holeColumn - 0.5) * U - width / 2, height / 2 - (hole.holeRow - 0.5) * U);
+    var point = vector((cell.column - 0.5) * U - width / 2, height / 2 - (cell.row - 0.5) * U);
     var lead = min(PIN_BEVEL, thickness / 2 - 0.05 * millimeter);
     var margin = faceChamfers ? min(EDGE, thickness / 2 - 0.01 * millimeter) : 0 * millimeter;
     var radius = PIN / 2 + lead + margin;
@@ -59,6 +117,8 @@ function flatPanel(context is Context, id is Id, width is ValueWithUnits,
 {
     var columns = round(width / U);
     var rows = round(height / U);
+    var cells = [];
+    for (var hole in holes) cells = append(cells, pinCellFromHole(hole));
     var plate = id + "plate";
     makeBox(context, plate, vector(0, 0, 0) * millimeter, vector(width, height, thickness));
     for (var i in [0, 1, 2, 3])
@@ -88,27 +148,27 @@ function flatPanel(context is Context, id is Id, width is ValueWithUnits,
     var lead = min(PIN_BEVEL, thickness / 2 - 0.05 * millimeter);
     for (var i = 0; i < size(holes); i += 1)
     {
-        var hole = holes[i];
-        if (hole.holeColumn > columns || hole.holeRow > rows)
+        var cell = cells[i];
+        if (cell.column > columns || cell.row > rows)
             throw regenError("Pin hole " ~ (i + 1) ~ " is outside the panel grid. Choose a column and row within its width and height.", ["flatHoles"]);
-        if (hole.holeColumn != 1 && hole.holeColumn != columns &&
-            hole.holeRow != 1 && hole.holeRow != rows)
+        if (cell.column != 1 && cell.column != columns &&
+            cell.row != 1 && cell.row != rows)
             throw regenError("Pin hole " ~ (i + 1) ~ " must be on an edge. Choose the first or last column, or the first or last row.", ["flatHoles"]);
-        var x = (hole.holeColumn - 0.5) * U - width / 2;
-        var y = height / 2 - (hole.holeRow - 0.5) * U;
+        var x = (cell.column - 0.5) * U - width / 2;
+        var y = height / 2 - (cell.row - 0.5) * U;
         var radius = PIN / 2 + lead;
         var margin = faceChamfers ? edgeBevel : 0 * millimeter;
         if (abs(x) + radius + margin >= width / 2 ||
             abs(y) + radius + margin >= height / 2)
             throw regenError("Pin hole " ~ (i + 1) ~ " is too close to the panel edge. Move it inward or increase the panel size.", ["flatHoles"]);
-        if (!flatHoleFits(width, height, thickness, faceChamfers, cutCorners, cornerClearance, hole))
+        if (!flatHoleFits(width, height, thickness, faceChamfers, cutCorners, cornerClearance, cell))
             throw regenError("Pin hole " ~ (i + 1) ~ " overlaps a connector notch. Choose another edge cell.", ["flatHoles"]);
         for (var j = 0; j < i; j += 1)
         {
-            var other = holes[j];
+            var other = cells[j];
             var spacing = (PIN + PIN) / 2 + 2 * lead;
-            if (abs(hole.holeColumn - other.holeColumn) * U <= spacing &&
-                abs(hole.holeRow - other.holeRow) * U <= spacing)
+            if (abs(cell.column - other.column) * U <= spacing &&
+                abs(cell.row - other.row) * U <= spacing)
                 throw regenError("Pin holes " ~ (j + 1) ~ " and " ~ (i + 1) ~ " overlap. Move them apart.", ["flatHoles"]);
         }
         var tag = id + ("hole" ~ i);
