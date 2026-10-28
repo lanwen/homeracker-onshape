@@ -44,7 +44,7 @@ Panels cover the sides of the rack. They have a 2 mm face and mounts for lock pi
 - **Grid width / Grid height**: Sets the size in 15 mm units, from 2 to 50 units on each axis. These are grid sizes; the finished outline also depends on the fit and mounts.
 - **Panel fit**: InterFit sits between the supports and can be removed. Full cover overlaps the frame and needs to be assembled with it.
 - **Adjacent panel clearance**: Appears for Full cover only. Sets the gap between neighbouring full cover panels. Enter a length, such as 0.5 mm.
-- **Edge chamfers**: Bevels the panel edges. Turn it off to leave the edges square. Pin-hole entrances always stay beveled.
+- **Face chamfers**: Bevels the perimeter of the flat panel face. Turn it off to leave that perimeter square. Mounts and pin-hole entrances always stay beveled.
 - **Corner mounts**: Adds full-height corner mounts with pin holes. Turn it off when a panel on an adjacent side needs those holes. Short corner outlines remain.
 - **North / South / East / West mounts**: Adds the mounting strip on each edge. On the panel face, north is +Y, south is -Y, east is +X, and west is -X. Strips appear on edges longer than 2 grid units. InterFit keeps an edge wall and pin holes when a strip is off.
 

@@ -49,8 +49,8 @@ Each point belongs to its part and follows it into an assembly.
 Mate Z axes follow the connection direction. Use Flip primary axis or Reorient secondary axis
 in the assembly mate dialog when needed.
 Pin-hole points align the hole axes; a mate offset may be needed for the wall thickness and fit clearance.
-Panel Edge chamfers controls the edge bevels and starts enabled.
-Pin-hole entrances always stay chamfered.
+Panel Face chamfers controls only the perimeter of the flat plate and starts enabled.
+Mounts and pin-hole entrances always stay chamfered.
 Full cover corner relief cuts remain, as in the upstream design.
 
 ## Geometry details
@@ -85,7 +85,7 @@ Each case produces one solid.
 
 Part bounds describe the smallest box around a part.
 For those 15 cases, part bounds match the SCAD references and volume differences are below 0.005%.
-With edge chamfers disabled, this port keeps the pin-hole entrance chamfers.
+With face chamfers disabled, this port keeps the mount and pin-hole entrance chamfers.
 Upstream disables those too, so the six additional cases have an intentional geometry difference.
 STEP surface comparison remains pending.
 The numerical results do not establish fit for your printer and material.

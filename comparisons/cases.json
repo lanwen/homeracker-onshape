@@ -219,7 +219,7 @@
         "westMounts": true,
         "panelChamfers": false
       },
-      "expected_difference": "Onshape retains pin-hole entrance chamfers when edge chamfers are disabled; upstream disables both."
+      "expected_difference": "Onshape disables only flat panel face chamfers; upstream also disables mount and pin-hole entrance chamfers."
     },
     {
       "name": "panel_fullcover_4x3_square",
@@ -238,7 +238,7 @@
         "westMounts": true,
         "panelChamfers": false
       },
-      "expected_difference": "Onshape retains pin-hole entrance chamfers when edge chamfers are disabled; upstream disables both."
+      "expected_difference": "Onshape disables only flat panel face chamfers; upstream also disables mount and pin-hole entrance chamfers."
     },
     {
       "name": "panel_interfit_2x2_square",
@@ -257,7 +257,7 @@
         "westMounts": true,
         "panelChamfers": false
       },
-      "expected_difference": "Onshape retains pin-hole entrance chamfers when edge chamfers are disabled; upstream disables both."
+      "expected_difference": "Onshape disables only flat panel face chamfers; upstream also disables mount and pin-hole entrance chamfers."
     },
     {
       "name": "panel_interfit_partial_square",
@@ -277,7 +277,7 @@
         "panelChamfers": false,
         "mateConnectors": false
       },
-      "expected_difference": "Onshape retains pin-hole entrance chamfers when edge chamfers are disabled; upstream disables both."
+      "expected_difference": "Onshape disables only flat panel face chamfers; upstream also disables mount and pin-hole entrance chamfers."
     },
     {
       "name": "panel_fullcover_partial_square",
@@ -297,7 +297,7 @@
         "panelChamfers": false,
         "mateConnectors": false
       },
-      "expected_difference": "Onshape retains pin-hole entrance chamfers when edge chamfers are disabled; upstream disables both."
+      "expected_difference": "Onshape disables only flat panel face chamfers; upstream also disables mount and pin-hole entrance chamfers."
     },
     {
       "name": "panel_fullcover_corner_relief_square",
@@ -316,7 +316,7 @@
         "westMounts": false,
         "panelChamfers": false
       },
-      "expected_difference": "Onshape retains pin-hole entrance chamfers when edge chamfers are disabled; upstream disables both."
+      "expected_difference": "Onshape disables only flat panel face chamfers; upstream also disables mount and pin-hole entrance chamfers."
     }
   ]
 }

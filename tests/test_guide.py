@@ -15,7 +15,7 @@ def test_user_guide_has_version_settings_origin_and_working_links(tmp_path):
     reader = PdfReader(pdf)
     text = "\n".join(page.extract_text() for page in reader.pages)
     for expected in ["HomeRacker for Onshape", "v0.1.2", "Support", "Connector", "Panel", "Add the feature", "X pin holes", "Directions",
-                     "Edge chamfers", "Corner mounts", "Mate connectors", "Patrick", "Kirill Merkushev"]:
+                     "Face chamfers", "Corner mounts", "Mate connectors", "Patrick", "Kirill Merkushev"]:
         assert expected in text
     assert "**" not in text
     links = [str(annotation.get_object()["/A"]["/URI"])

@@ -81,6 +81,44 @@ def build_validation(source, cases):
             '                    "max_mm" : bounds.maxCorner / millimeter });',
             "        }",
         ])
+    # Compare the geometry above the plate for each face-chamfer on/off pair.
+    # Removing the flat face bevel must leave every mount unchanged.
+    names = {case["name"] for case in cases}
+    for case in cases:
+        name = case["name"]
+        if not name.endswith("_square") or name.removesuffix("_square") not in names:
+            continue
+        normal = name.removesuffix("_square")
+        full_cover = case["onshape"]["panelFit"] == "FULL_COVER"
+        plate_top = -7.6 if full_cover else -6.6
+        lines.extend([
+            '        {',
+            f'            const pairId = id + "{name}MountCheck";',
+            '            var volumes = [];',
+            f'            const sources = [id + "{normal}", id + "{name}"];',
+            '            for (var i in [0, 1])',
+            '            {',
+            '                const copyId = pairId + ("copy" ~ i);',
+            '                const maskId = pairId + ("mask" ~ i);',
+            '                const clipId = pairId + ("clip" ~ i);',
+            '                opPattern(context, copyId, {',
+            '                        "entities" : qBodyType(qCreatedBy(sources[i], EntityType.BODY), BodyType.SOLID),',
+            '                        "transforms" : [identityTransform()], "instanceNames" : ["check"],',
+            '                        "copyPropertiesAndAttributes" : false });',
+            f'                makeBox(context, maskId, vector(0, 0, {plate_top + 100.001}) * millimeter,',
+            '                        vector(2000, 2000, 200) * millimeter);',
+            '                opBoolean(context, clipId, {',
+            '                        "tools" : qUnion([qBodyType(qCreatedBy(copyId, EntityType.BODY), BodyType.SOLID), body(maskId)]),',
+            '                        "operationType" : BooleanOperationType.INTERSECTION });',
+            '                const upper = qBodyType(qCreatedBy(clipId, EntityType.BODY), BodyType.SOLID);',
+            '                volumes = append(volumes, evVolume(context, { "entities" : upper }) / (millimeter ^ 3));',
+            '                opDeleteBodies(context, pairId + ("delete" ~ i), { "entities" : upper });',
+            '            }',
+            '            if (abs(volumes[0] - volumes[1]) > 0.000001)',
+            f'                throw regenError("Face chamfer toggle changed mounts for {normal}");',
+            f'            println({{ "case" : "{normal}", "mount_geometry_unchanged" : true }});',
+            '        }',
+        ])
     lines.extend(["    });", ""])
     return "\n".join(lines)
 
