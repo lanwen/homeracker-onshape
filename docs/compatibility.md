@@ -101,6 +101,9 @@ The outer arm chamfer excludes that plane.
 The feature creates supports, connectors, side panels, sleeves, and flat mounting blanks.
 
 The feature compiles in Onshape with standard library `3095.0`.
+Mate connectors attach to a face of their owner part.
+This also works in Part Studios that use version 2960, where direct body attachments can fail.
+All five part types pass mate attachment and movement tests in versions 2960 and 3095.
 Regeneration rebuilds a part from its input values.
 The original 15 comparison cases regenerate through the Onshape MCP server without notices.
 The checks also verify mate counts, part ownership, and generated part names.

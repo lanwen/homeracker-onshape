@@ -123,6 +123,16 @@ The validation script is for a development document only.
 To use a smaller batch, pass a case name with `--case`.
 The cases are in [comparisons/cases.json](../comparisons/cases.json), [flat-panels.json](../comparisons/flat-panels.json), and [core-pin-holes.json](../comparisons/core-pin-holes.json).
 
+To test mate attachments in both old and current Part Studios, run:
+
+```sh
+mise run validation -- --compatibility
+```
+
+Run the generated `artifacts/homeracker-compatibility-checks.fs` in an Onshape development document.
+It creates all five part types in contexts from versions 2960 and 3095.
+It also moves each part and makes sure that its mate connectors follow it.
+
 ## Use a local build in a Feature Studio
 
 A Feature Studio stores FeatureScript code.

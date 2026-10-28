@@ -82,7 +82,8 @@ function squareFrustum(context is Context, id is Id,
 }
 
 // Owned connectors travel with their part when inserted into an assembly.
-// attachTo also makes them follow later Part Studio transformations.
+// A face attachment also follows later Part Studio transformations. Attaching
+// directly to a body fails to resolve its frame in older Part Studio contexts.
 function assemblyMate(context is Context, id is Id, label is string, owner is Query,
         origin is Vector, normal is Vector)
 {
@@ -95,7 +96,8 @@ function assemblyMate(context is Context, id is Id, label is string, owner is Qu
 {
     opMateConnector(context, id, {
             "coordSystem" : coordSystem(origin, along, normal),
-            "owner" : owner, "attachTo" : owner });
+            "owner" : owner,
+            "attachTo" : qNthElement(qClosestTo(qOwnedByBody(owner, EntityType.FACE), origin), 0) });
     setProperty(context, { "entities" : qCreatedBy(id, EntityType.BODY),
             "propertyType" : PropertyType.NAME, "value" : label });
 }

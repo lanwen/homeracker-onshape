@@ -373,12 +373,16 @@ def main():
     parser.add_argument("--case", action="append")
     parser.add_argument("--dialogs", action="store_true", help="Build the dialog behavior checks instead of geometry comparisons")
     parser.add_argument("--mates", action="store_true", help="Build physical fit checks for pin-opening mates")
+    parser.add_argument("--compatibility", action="store_true", help="Build mate attachment checks in old and current Part Studio contexts")
     args = parser.parse_args()
-    if args.dialogs or args.mates:
-        if args.case or args.dialogs and args.mates:
-            parser.error("Use only one of --dialogs, --mates, or --case")
+    if args.dialogs or args.mates or args.compatibility:
+        if args.case or sum([args.dialogs, args.mates, args.compatibility]) > 1:
+            parser.error("Use only one of --dialogs, --mates, --compatibility, or --case")
         source = write_bundle(ROOT).replace("export const homeracker =", "const homeracker =")
-        fixture = "dialog-checks" if args.dialogs else "mate-fit-checks"
+        if args.compatibility:
+            header, remainder = source.split("\n", 1)
+            source = header + '\nOld::import(path : "onshape/std/geometry.fs", version : "2960.0");\n' + remainder
+        fixture = "dialog-checks" if args.dialogs else "mate-fit-checks" if args.mates else "compatibility-checks"
         out = ROOT / ("artifacts/homeracker-" + fixture + ".fs")
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(source + "\n" + (ROOT / ("comparisons/" + fixture + ".fs")).read_text())
