@@ -56,11 +56,31 @@ Choose **Flat panel** for holes through the flat face.
 - **Grid width / Grid height**: Sets the size in 15 mm units, from 2 to 50 units on each axis. These are grid sizes; the finished outline also depends on the fit and mounts.
 - **Panel fit**: InterFit sits between the supports and can be removed. Full cover overlaps the frame and needs to be assembled with it.
 - **Adjacent panel clearance**: Appears for Full cover only. Sets the gap between neighbouring full cover panels. Enter a length, such as 0.5 mm.
-- **Face chamfers**: Bevels the perimeter of the flat panel face. Turn it off to leave that perimeter square. Mounts and pin-hole entrances always stay beveled.
+- **Edge chamfers**: Bevels the panel and mount edges. Turn it off to leave square edges on the plate, mounts, ledges, and bridges. Pin-hole entrances stay beveled.
 - **Corner mounts**: Adds full-height corner mounts with pin holes. Turn it off when a panel on an adjacent side needs those holes. Short corner outlines remain.
 - **North / South / East / West mounts**: Adds the mounting strip on each edge. On the panel face, north is +Y, south is -Y, east is +X, and west is -X. Strips appear on edges longer than 2 grid units. InterFit keeps an edge wall and pin holes when a strip is off.
 
 Start with a 4 x 3 InterFit panel. Check the preview before disabling mounts, especially where two panels meet.
+
+Expand Mounts to change the connector clearances along the edges.
+An inset moves the mounting wall inward from its normal outer surface.
+Top, bottom, left, and right each have an inset depth.
+Each depth starts at 2.1 mm and accepts 0 to 5 mm.
+A depth of zero keeps the normal wall position on that side.
+Narrow inset steps use smaller edge bevels to prevent overlaps.
+
+Corner clearances select Both directions, Horizontal only, Vertical only, or No inset for each corner.
+Horizontal means the top or bottom edge. Vertical means the left or right edge.
+These choices control the inset sections. Corner mounts controls their height and pin holes.
+
+Extra edge clearances adds inset sections away from the corners.
+Choose an edge, a start position, and a length in grid units.
+Positions start at 1. Top and bottom count from the left. Left and right count from the top.
+Overlapping sections merge and use the depth for that side.
+
+For a 14 x 6 panel, set the corner clearances to Horizontal only.
+Add a Top section at position 9 with a length of 3.
+This clears positions 9 through 11 and keeps the vertical corner edges at their normal positions.
 
 ## Sleeve
 

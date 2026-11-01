@@ -30,6 +30,7 @@ Edit the source files by their purpose:
 - `src/support.fs`: Support construction
 - `src/connector.fs`: Connector construction
 - `src/panel.fs`: Side-panel construction
+- `src/panelClearance.fs`: Directional corner insets and edge sections
 - `src/sleeve.fs`: Support sleeve construction
 - `src/flatPanel.fs`: Rectangular mounting blanks and face holes
 - `src/flatPanelDialog.fs`: Flat-panel hole lists and corner controls
@@ -132,6 +133,31 @@ mise run validation -- --compatibility
 Run the generated `artifacts/homeracker-compatibility-checks.fs` in an Onshape development document.
 It creates all five part types in contexts from versions 2960 and 3095.
 It also moves each part and makes sure that its mate connectors follow it.
+
+To test panel edges with chamfers off, run:
+
+```sh
+mise run validation -- --panel-chamfers
+```
+
+Run the generated `artifacts/homeracker-panel-chamfer-checks.fs` in an Onshape development document.
+The test allows sloped faces only at pin-hole entrances.
+It covers both panel fits, minimum sizes, and partial mounts.
+
+To test directional panel insets and side depths, run:
+
+```sh
+mise run validation -- --panel-clearances
+```
+
+Run `artifacts/homeracker-panel-clearance-checks.fs` in an Onshape development document.
+It tests the 14 x 6 panel with a three-unit top inset at position 9.
+It also tests zero, shallow, unequal, and deeper side depths with both panel fits.
+Each case must produce one solid and usable mate connectors.
+Directional corner cases also require a chamfer on the joined outline.
+Panel corner join creates a separate 14 x 6 example for close visual inspection.
+Inspect the short inset ends and the L-shaped corner from both sides.
+Small probes also test for material that interrupts the corner bevels.
 
 ## Use a local build in a Feature Studio
 

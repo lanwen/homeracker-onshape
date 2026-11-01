@@ -105,13 +105,25 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
                         "Set the gap between adjacent full cover panels. Enter a length, such as 0.5 mm." }
                     isLength(definition.panelClearance, { (millimeter) : [0, 0, 5] } as LengthBoundSpec);
                 }
-                annotation { "Name" : "Face chamfers", "Default" : true, "Description" :
-                        "Bevel the perimeter of the flat panel face. Mounts and pin hole entrances always stay beveled." }
+                annotation { "Name" : "Edge chamfers", "Default" : true, "Description" :
+                        "Bevel the panel and mount edges. Turn it off to leave only the pin-hole entrance bevels." }
                 definition.panelChamfers is boolean;
             }
 
             annotation { "Group Name" : "Mounts", "Collapsed By Default" : true }
             {
+                annotation { "Name" : "Top inset depth", "Description" :
+                        "Move selected top edge sections inward from the normal mount surface. Default: 2.1 mm. Zero keeps the normal mount profile." }
+                isLength(definition.panelInsetTop, { (millimeter) : [0, 2.1, 5] } as LengthBoundSpec);
+                annotation { "Name" : "Bottom inset depth", "Description" :
+                        "Move selected bottom edge sections inward from the normal mount surface. Default: 2.1 mm. Zero keeps the normal mount profile." }
+                isLength(definition.panelInsetBottom, { (millimeter) : [0, 2.1, 5] } as LengthBoundSpec);
+                annotation { "Name" : "Left inset depth", "Description" :
+                        "Move selected left edge sections inward from the normal mount surface. Default: 2.1 mm. Zero keeps the normal mount profile." }
+                isLength(definition.panelInsetLeft, { (millimeter) : [0, 2.1, 5] } as LengthBoundSpec);
+                annotation { "Name" : "Right inset depth", "Description" :
+                        "Move selected right edge sections inward from the normal mount surface. Default: 2.1 mm. Zero keeps the normal mount profile." }
+                isLength(definition.panelInsetRight, { (millimeter) : [0, 2.1, 5] } as LengthBoundSpec);
                 annotation { "Name" : "Corner mounts", "Description" :
                         "Add corner mounts with pin holes. Disable these on large panels if adjacent panels need the same pin holes." }
                 definition.cornerMounts is boolean;
@@ -127,6 +139,37 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
                 annotation { "Name" : "West mounts", "Description" :
                         "Add the mounting strip on the -X edge of the panel face." }
                 definition.westMounts is boolean;
+            }
+            annotation { "Group Name" : "Corner connector clearances", "Collapsed By Default" : true }
+            {
+                annotation { "Name" : "Top left", "Default" : "BOTH", "Description" :
+                        "Horizontal insets the top edge. Vertical insets the left edge. No inset continues the normal edge mount." }
+                definition.panelCornerNW is PanelCornerClearance;
+                annotation { "Name" : "Top right", "Default" : "BOTH", "Description" :
+                        "Horizontal insets the top edge. Vertical insets the right edge." }
+                definition.panelCornerNE is PanelCornerClearance;
+                annotation { "Name" : "Bottom left", "Default" : "BOTH", "Description" :
+                        "Horizontal insets the bottom edge. Vertical insets the left edge." }
+                definition.panelCornerSW is PanelCornerClearance;
+                annotation { "Name" : "Bottom right", "Default" : "BOTH", "Description" :
+                        "Horizontal insets the bottom edge. Vertical insets the right edge." }
+                definition.panelCornerSE is PanelCornerClearance;
+            }
+            annotation { "Name" : "Extra edge clearances", "Item name" : "Edge clearance",
+                    "Item label template" : "#clearanceSide: #clearanceStart +#clearanceLength",
+                    "UIHint" : UIHint.COLLAPSE_ARRAY_ITEMS, "Description" :
+                    "Inset an edge section like a corner. Its side inset depth controls the distance. Positions count from the left on top and bottom, or from the top on left and right." }
+            definition.panelEdgeClearances is array;
+            for (var clearance in definition.panelEdgeClearances)
+            {
+                annotation { "Name" : "Edge" }
+                clearance.clearanceSide is PanelEdge;
+                annotation { "Name" : "Start position", "Description" :
+                        "Count grid cells from 1. Top and bottom use the grid width. Left and right use the grid height." }
+                isInteger(clearance.clearanceStart, { (unitless) : [1, 1, 50] } as IntegerBoundSpec);
+                annotation { "Name" : "Length in grid units", "Description" :
+                        "Set the number of cells to inset. Start 9 and length 3 covers positions 9, 10, and 11." }
+                isInteger(clearance.clearanceLength, { (unitless) : [1, 1, 50] } as IntegerBoundSpec);
             }
         }
         if (definition.kind == HomerackerKind.SLEEVE)
@@ -275,7 +318,11 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
                     definition.panelFit,
                     definition.panelFit == PanelFit.FULL_COVER ? definition.panelClearance : 0 * millimeter,
                     definition.cornerMounts, definition.northMounts, definition.southMounts,
-                    definition.eastMounts, definition.westMounts, definition.panelChamfers, definition.mateConnectors);
+                    definition.eastMounts, definition.westMounts, definition.panelChamfers, definition.mateConnectors,
+                    panelClearanceSpec(definition.panelX, definition.panelY,
+                            [definition.panelCornerNW, definition.panelCornerNE, definition.panelCornerSW, definition.panelCornerSE],
+                            definition.panelEdgeClearances,
+                            [definition.panelInsetTop, definition.panelInsetBottom, definition.panelInsetLeft, definition.panelInsetRight]));
         }
         if (definition.kind == HomerackerKind.SLEEVE)
         {
@@ -334,6 +381,15 @@ export const homeracker = defineFeature(function(context is Context, id is Id, d
         "panelY" : 3,
         "panelFit" : PanelFit.INTERFIT,
         "panelChamfers" : true,
+        "panelInsetTop" : 2.1 * millimeter,
+        "panelInsetBottom" : 2.1 * millimeter,
+        "panelInsetLeft" : 2.1 * millimeter,
+        "panelInsetRight" : 2.1 * millimeter,
+        "panelCornerNW" : PanelCornerClearance.BOTH,
+        "panelCornerNE" : PanelCornerClearance.BOTH,
+        "panelCornerSW" : PanelCornerClearance.BOTH,
+        "panelCornerSE" : PanelCornerClearance.BOTH,
+        "panelEdgeClearances" : [],
         "mateConnectors" : true,
         "panelClearance" : 0 * millimeter,
         "cornerMounts" : true,

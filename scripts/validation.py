@@ -352,42 +352,19 @@ def build_validation(source, cases):
             '                    "max_mm" : bounds.maxCorner / millimeter });',
             "        }",
         ])
-    # Compare the geometry above the plate for each face-chamfer on/off pair.
-    # Removing the flat face bevel must leave every mount unchanged.
+    # Turning off edge chamfers restores material outside the pin entrances.
     names = {case["name"] for case in cases}
     for case in cases:
         name = case["name"]
         if not name.endswith("_square") or name.removesuffix("_square") not in names:
             continue
         normal = name.removesuffix("_square")
-        full_cover = case["onshape"]["panelFit"] == "FULL_COVER"
-        plate_top = -7.6 if full_cover else -6.6
         lines.extend([
             '        {',
-            f'            const pairId = id + "{name}MountCheck";',
-            '            var volumes = [];',
-            f'            const sources = [id + "{normal}", id + "{name}"];',
-            '            for (var i in [0, 1])',
-            '            {',
-            '                const copyId = pairId + ("copy" ~ i);',
-            '                const maskId = pairId + ("mask" ~ i);',
-            '                const clipId = pairId + ("clip" ~ i);',
-            '                opPattern(context, copyId, {',
-            '                        "entities" : qBodyType(qCreatedBy(sources[i], EntityType.BODY), BodyType.SOLID),',
-            '                        "transforms" : [identityTransform()], "instanceNames" : ["check"],',
-            '                        "copyPropertiesAndAttributes" : false });',
-            f'                makeBox(context, maskId, vector(0, 0, {plate_top + 100.001}) * millimeter,',
-            '                        vector(2000, 2000, 200) * millimeter);',
-            '                opBoolean(context, clipId, {',
-            '                        "tools" : qUnion([qBodyType(qCreatedBy(copyId, EntityType.BODY), BodyType.SOLID), body(maskId)]),',
-            '                        "operationType" : BooleanOperationType.INTERSECTION });',
-            '                const upper = qBodyType(qCreatedBy(clipId, EntityType.BODY), BodyType.SOLID);',
-            '                volumes = append(volumes, evVolume(context, { "entities" : upper }) / (millimeter ^ 3));',
-            '                opDeleteBodies(context, pairId + ("delete" ~ i), { "entities" : upper });',
-            '            }',
-            '            if (abs(volumes[0] - volumes[1]) > 0.000001)',
-            f'                throw regenError("Face chamfer toggle changed mounts for {normal}");',
-            f'            println({{ "case" : "{normal}", "mount_geometry_unchanged" : true }});',
+            f'            const beveled = qBodyType(qCreatedBy(id + "{normal}", EntityType.BODY), BodyType.SOLID);',
+            f'            const square = qBodyType(qCreatedBy(id + "{name}", EntityType.BODY), BodyType.SOLID);',
+            '            if (evVolume(context, { "entities" : square }) <= evVolume(context, { "entities" : beveled }))',
+            f'                throw regenError("Disabling edge chamfers did not restore material for {normal}");',
             '        }',
         ])
     lines.extend(["    });", ""])
@@ -400,15 +377,19 @@ def main():
     parser.add_argument("--dialogs", action="store_true", help="Build the dialog behavior checks instead of geometry comparisons")
     parser.add_argument("--mates", action="store_true", help="Build physical fit checks for pin-opening mates")
     parser.add_argument("--compatibility", action="store_true", help="Build mate attachment checks in old and current Part Studio contexts")
+    parser.add_argument("--panel-chamfers", action="store_true", help="Check that only panel pin-hole entrances stay beveled")
+    parser.add_argument("--panel-clearances", action="store_true", help="Build directional panel inset and depth cases")
     args = parser.parse_args()
-    if args.dialogs or args.mates or args.compatibility:
-        if args.case or sum([args.dialogs, args.mates, args.compatibility]) > 1:
-            parser.error("Use only one of --dialogs, --mates, --compatibility, or --case")
+    if args.dialogs or args.mates or args.compatibility or args.panel_chamfers or args.panel_clearances:
+        if args.case or sum([args.dialogs, args.mates, args.compatibility, args.panel_chamfers, args.panel_clearances]) > 1:
+            parser.error("Use only one validation mode or --case")
         source = write_bundle(ROOT).replace("export const homeracker =", "const homeracker =")
         if args.compatibility:
             header, remainder = source.split("\n", 1)
             source = header + '\nOld::import(path : "onshape/std/geometry.fs", version : "2960.0");\n' + remainder
-        fixture = "dialog-checks" if args.dialogs else "mate-fit-checks" if args.mates else "compatibility-checks"
+        fixture = ("dialog-checks" if args.dialogs else "mate-fit-checks" if args.mates
+                   else "compatibility-checks" if args.compatibility else "panel-chamfer-checks" if args.panel_chamfers
+                   else "panel-clearance-checks")
         out = ROOT / ("artifacts/homeracker-" + fixture + ".fs")
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(source + "\n" + (ROOT / ("comparisons/" + fixture + ".fs")).read_text())
@@ -426,7 +407,8 @@ def main():
         for case in all_cases:
             if case["name"] in baseline:
                 previous = baseline[case["name"]]
-                case.setdefault("expected_volume_mm3", previous["volume"])
+                if not (case["onshape"]["kind"] == "PANEL" and case["onshape"].get("panelChamfers") is False):
+                    case.setdefault("expected_volume_mm3", previous["volume"])
                 case["expected_bounds_mm"] = [previous["min"], previous["max"]]
     cases = [c for c in all_cases if not args.case or c["name"] in args.case]
     if not cases or args.case and set(args.case) != {c["name"] for c in cases}:

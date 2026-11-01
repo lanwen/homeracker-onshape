@@ -19,7 +19,7 @@ The Type field controls which inputs appear:
 | --- | --- |
 | Support | Length in 15 mm units, optional X pin holes |
 | Connector | Named socket shapes, optional X/Y/Z pull-through, separate pin holes in closed core walls |
-| Panel | X/Y grid size, InterFit or full cover, per-edge and corner mounts, optional face chamfers |
+| Panel | X/Y grid size, InterFit or full cover, edge and corner mounts, directional insets, optional edge chamfers |
 | Sleeve | Length in 15 mm units, optional sleeve chamfers |
 | Flat panel | Rectangle grid width and height, thickness, optional face chamfers, individual edge grid positions with 4 mm square pin holes, connector notches |
 
@@ -36,6 +36,13 @@ For large panels, turn off corner mounts if adjacent panels need the same pin ho
 The edge mount inputs control the mounting strips.
 On the panel face, north is +Y and south is −Y.
 East is +X and west is −X.
+
+Custom panel insets use separate depths for the top, bottom, left, and right edges.
+The default depth is 2.1 mm, measured inward from the normal outer mount surface.
+Corner direction choices and extra grid ranges select the affected sections.
+Zero depth keeps the normal profile. Overlapping ranges merge without adding their depths.
+Deep corner insets can leave too little space for a pin-hole entrance.
+The feature rejects these combinations.
 
 ## Assembly points and names
 
@@ -62,9 +69,9 @@ Mate Z axes follow the connection direction. Use Flip primary axis or Reorient s
 in the assembly mate dialog when needed.
 Panel pin points sit on their contact surfaces and face outward.
 Sleeve pin points align the hole axes. Use a mate offset for the sleeve wall thickness when needed.
-Panel Face chamfers controls only the perimeter of the flat plate and starts enabled.
-Mounts and pin-hole entrances always stay chamfered.
-Full cover corner relief cuts remain, as in the upstream design.
+Panel Edge chamfers controls the plate, mount, ledge, and bridge edges and starts enabled.
+Pin-hole entrances always stay chamfered.
+The toggle also controls diagonal corner cuts.
 
 The flat panel is a native rectangular mounting blank with holes through its face.
 Each 4 mm square hole has its own grid column and row.
@@ -116,14 +123,18 @@ Each case produces one solid.
 
 Part bounds describe the smallest box around a part.
 For those 15 cases, part bounds match the SCAD references and volume differences are below 0.005%.
-With face chamfers disabled, this port keeps the mount and pin-hole entrance chamfers.
-Upstream disables those too, so the six additional cases have an intentional geometry difference.
+With panel edge chamfers disabled, this port keeps only the pin-hole entrance bevels.
+Upstream also disables those bevels and retains some diagonal corner cuts.
+The six additional cases therefore have an intentional geometry difference.
 Four sleeve cases also regenerate with owned mate points.
 With sleeve edge chamfers enabled, their bounds match the SCAD references within 0.000001 mm and volume differences are below 0.005%.
 With edge chamfers off, this port keeps the pin-hole entrance chamfers; upstream disables them.
 Ten native flat-panel cases check individual edge grid positions, connector notches, thin plates, and face chamfers.
 The plain, four-hole, and thin-plate cases have analytical volume checks.
-After the module refactor, all 35 existing cases retain their recorded v0.1.5 volumes and bounds within 0.000001 mm or mm³.
+The v0.1.5 baseline records volumes and bounds before the panel chamfer behavior changed.
+Panel cases with chamfers off now exclude that volume baseline. Their bounds still use it.
+Ten panel chamfer cases cover both fits, minimum sizes, and partial mounts.
+With edge chamfers off, only pin-hole entrances have sloped faces. Every entrance retains its four bevel faces.
 The 42 core-wall cases regenerate without notices.
 They cover every connector shape with no pull-through or X, Y, and Z pull-throughs.
 Individual-side cases also cover disabled walls, beveled entrances, and mate positions.
