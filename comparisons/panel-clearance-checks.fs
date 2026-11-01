@@ -5,7 +5,9 @@ export const panelClearanceChecks = defineFeature(function(context is Context, i
         const horizontal = [PanelCornerClearance.HORIZONTAL, PanelCornerClearance.HORIZONTAL,
                             PanelCornerClearance.HORIZONTAL, PanelCornerClearance.HORIZONTAL];
         const ranges = [{ "clearanceSide" : PanelEdge.NORTH, "clearanceStart" : 9, "clearanceLength" : 3 }];
-        const spec = panelClearanceSpec(14, 6, horizontal, ranges);
+        const depth = WALL + FIT / 2;
+        const defaultDepths = [depth, depth, depth, depth];
+        const spec = panelClearanceSpec(14, 6, horizontal, ranges, defaultDepths);
         if (!spec.custom || spec.edges[0] != [true, false, false, false, false, false, false, false,
                                              true, true, true, false, false, true] ||
                 spec.edges[2] != [false, false, false, false, false, false] ||
@@ -13,13 +15,13 @@ export const panelClearanceChecks = defineFeature(function(context is Context, i
             throw regenError("Directional corners or clearance positions are incorrect");
         const both = [PanelCornerClearance.BOTH, PanelCornerClearance.BOTH,
                       PanelCornerClearance.BOTH, PanelCornerClearance.BOTH];
-        if (panelClearanceSpec(14, 6, both, []).custom)
+        if (panelClearanceSpec(14, 6, both, [], defaultDepths).custom)
             throw regenError("Default panel must retain its original mount layout");
         for (var invalid in [
                 { "clearanceSide" : PanelEdge.NORTH, "clearanceStart" : 13, "clearanceLength" : 3 },
                 { "clearanceSide" : PanelEdge.WEST, "clearanceStart" : 9, "clearanceLength" : 3 },
                 { "clearanceSide" : PanelEdge.NORTH, "clearanceStart" : 0, "clearanceLength" : 1 }])
-            if (try silent(panelClearanceSpec(14, 6, both, [invalid])) != undefined)
+            if (try silent(panelClearanceSpec(14, 6, both, [invalid], defaultDepths)) != undefined)
                 throw regenError("Invalid edge clearance range accepted");
         for (var fit in [PanelFit.INTERFIT, PanelFit.FULL_COVER])
         {

@@ -53,12 +53,6 @@ function panelCornerInset(mode is PanelCornerClearance, horizontal is boolean) r
 }
 
 // Grid positions count left to right on horizontal edges and top to bottom on vertical edges.
-function panelClearanceSpec(nx is number, ny is number, corners is array, ranges is array) returns PanelClearanceSpec
-{
-    const depth = WALL + FIT / 2;
-    return panelClearanceSpec(nx, ny, corners, ranges, [depth, depth, depth, depth]);
-}
-
 function panelClearanceSpec(nx is number, ny is number, corners is array, ranges is array, depths is array) returns PanelClearanceSpec
 {
     const adjacentCorners = [[0, 1], [2, 3], [0, 2], [1, 3]];
